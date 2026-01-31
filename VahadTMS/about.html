@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - VAHAD</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .about-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/hero_bg.png');
+            background-size: cover;
+            background-position: center;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .about-header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .about-content {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        .about-section {
+            margin-bottom: 50px;
+        }
+
+        .about-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .team-member {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid var(--accent-color);
+            background-color: #eee;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            background: var(--primary-color);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html"
+                    style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;">
+                    <div class="logo-icon">✈️</div>
+                    <span class="logo-text">VAHAD</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="rewards.html" style="color: #FFD700; font-weight: 600;">👑 Rewards</a></li>
+                <li><a href="destinations.html">Destinations</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+
+                <!-- Auth Section: Will be toggled by JS -->
+                <li id="authLinks">
+                    <a href="login.html" class="nav-btn">Login</a>
+                    <a href="register.html" class="nav-btn-highlight">Sign Up</a>
+                </li>
+
+                <!-- Profile Dropdown (Hidden by default) -->
+                <li id="profileSection" style="display: none; position: relative;">
+                    <div class="profile-trigger" onclick="toggleProfileMenu()"
+                        style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                        <img id="navAvatar" src="https://ui-avatars.com/api/?name=User" class="nav-user-img"
+                            style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        <span style="font-size: 0.9rem; font-weight: 600;">Account ▾</span>
+                    </div>
+                    <div id="profileDropdown"
+                        style="display: none; position: absolute; top: 100%; right: 0; background: white; width: 200px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; margin-top: 10px; border: 1px solid #eee;">
+                        <div style="padding: 15px; border-bottom: 1px solid #f5f5f5; background: #f9f9f9;">
+                            <strong style="display: block; color: #333;" id="navUserName">User</strong>
+                            <small style="color: #777;" id="navUserEmail">user@example.com</small>
+                        </div>
+                        <a href="my_bookings.html"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s;">🎫
+                            My Bookings</a>
+                        <a href="settings.html"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s;">⚙️
+                            Settings</a>
+                        <a href="#" onclick="logout()"
+                            style="display: block; padding: 12px 20px; color: #d32f2f; text-decoration: none; transition: background 0.2s;">🚪
+                            Log Out</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="about-header">
+        <div>
+            <h1>About VAHAD</h1>
+            <p>Redefining Travel Management Since 2024</p>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="about-content">
+        <section class="about-section">
+            <h2>About The Project</h2>
+            <p>VAHAD (Virtual Assistant for Holiday & Adventure Destinations) is a comprehensive Tourist Management
+                System designed to simplify the travel experience in India. It leverages modern web technologies to
+                connect travelers with the rich cultural and natural heritage of
+                cities like Salem, Chennai, and Erode.</p>
+        </section>
+
+        <section class="about-section">
+            <h2>Our Mission</h2>
+            <p>To empower travelers by providing a unified, user-friendly platform that simplifies booking, itinerary
+                planning, and destination discovery. We aim to connect people with India's most beautiful places
+                while promoting sustainable and responsible tourism.</p>
+        </section>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div>Destinations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">10k+</div>
+                <div>Happy Travelers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div>Support</div>
+            </div>
+        </div>
+
+        <section class="about-section" style="margin-top: 50px;">
+            <h2>The Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=random" class="team-img"
+                        alt="CEO">
+                    <h3>Alex Johnson</h3>
+                    <p style="color: #777; font-size: 0.9rem;">Founder & CEO</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+Lee&background=random" class="team-img" alt="CTO">
+                    <h3>Sarah Lee</h3>
+                    <p style="color: #777; font-size: 0.9rem;">Head of Technology</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://ui-avatars.com/api/?name=Mike+Brown&background=random" class="team-img"
+                        alt="Design">
+                    <h3>Mike Brown</h3>
+                    <p style="color: #777; font-size: 0.9rem;">Creative Director</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://ui-avatars.com/api/?name=Emma+Davis&background=random" class="team-img"
+                        alt="Support">
+                    <h3>Emma Davis</h3>
+                    <p style="color: #777; font-size: 0.9rem;">Customer Success</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 VAHAD Tourist Management System | Designed for Smart Travel</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

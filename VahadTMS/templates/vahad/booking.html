@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Trip - VAHAD</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body id="page-booking">
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html"
+                    style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;">
+                    <div class="logo-icon">✈️</div>
+                    <span class="logo-text">VAHAD</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="rewards.html" style="color: #FFD700; font-weight: 600;">👑 Rewards</a></li>
+                <li><a href="destinations.html">Destinations</a></li>
+                <li><a href="about.html">About</a></li>
+
+                <!-- Auth Section: Will be toggled by JS -->
+                <li id="authLinks">
+                    <a href="login.html" class="nav-btn">Login</a>
+                    <a href="register.html" class="nav-btn-highlight">Sign Up</a>
+                </li>
+
+                <!-- Profile Dropdown (Hidden by default) -->
+                <li id="profileSection" style="display: none; position: relative;">
+                    <div class="profile-trigger" onclick="toggleProfileMenu()"
+                        style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                        <img id="navAvatar" src="https://ui-avatars.com/api/?name=User" class="nav-user-img"
+                            style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        <span style="font-size: 0.9rem; font-weight: 600;">Account ▾</span>
+                    </div>
+                    <div id="profileDropdown"
+                        style="display: none; position: absolute; top: 100%; right: 0; background: white; width: 200px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; margin-top: 10px; border: 1px solid #eee;">
+                        <div style="padding: 15px; border-bottom: 1px solid #f5f5f5; background: #f9f9f9;">
+                            <strong style="display: block; color: #333;" id="navUserName">User</strong>
+                            <small style="color: #777;" id="navUserEmail">user@example.com</small>
+                        </div>
+                        <a href="my_bookings.html"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s;">🎫
+                            My Bookings</a>
+                        <a href="settings.html"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s;">⚙️
+                            Settings</a>
+                        <a href="#" onclick="logout()"
+                            style="display: block; padding: 12px 20px; color: #d32f2f; text-decoration: none; transition: background 0.2s;">🚪
+                            Log Out</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="booking-layout">
+
+        <!-- Left Column: Form -->
+        <div class="booking-form-container">
+            <h2>Customize Your Trip</h2>
+            <p style="color: #666; margin-bottom: 30px;">Fill in the details below to check availability.</p>
+
+            <form action="payment.html" id="bookingForm">
+
+                <!-- 1. Destination & Dates -->
+                <div class="form-section">
+                    <h3>📍 Destination & Schedule</h3>
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label>Select Destination</label>
+                            <select id="destinationSelect" required onchange="calculatePrice()">
+                                <option value="2000">Chennai (₹2,000 Base)</option>
+                                <option value="5000">Salem (Yercaud) (₹5,000 Base)</option>
+                                <option value="4500">Agra (Taj Mahal) (₹4,500 Base)</option>
+                                <option value="8000">Goa (₹8,000 Base)</option>
+                                <option value="10000">Manali (₹10,000 Base)</option>
+                                <option value="12000">Kerala (Backwaters) (₹12,000 Base)</option>
+                                <option value="5000">Varanasi (₹5,000 Base)</option>
+                                <option value="7500">Jaipur (₹7,500 Base)</option>
+                                <option value="6000">Coorg (₹6,000 Base)</option>
+                                <option value="8500">Rishikesh (₹8,500 Base)</option>
+                                <option value="25000">Andaman Islands (₹25,000 Base)</option>
+                                <option value="4000">Mysore (₹4,000 Base)</option>
+                                <option value="6500">Kodaikanal (₹6,500 Base)</option>
+                                <option value="3000">Erode (₹3,000 Base)</option>
+                                <option value="7000">Ooty (₹7,000 Base)</option>
+                                <option value="3500">Madurai (₹3,500 Base)</option>
+                                <option value="30000">Lakshadweep (₹30,000 Base)</option>
+                                <option value="15000">Ladakh (₹15,000 Base)</option>
+                                <option value="9000">Jaisalmer (₹9,000 Base)</option>
+                                <option value="6000">Hampi (₹6,000 Base)</option>
+                                <option value="8000">Mumbai (₹8,000 Base)</option>
+                                <option value="10000">Udaipur (₹10,000 Base)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Start Date</label>
+                            <input type="date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Arrival Time</label>
+                            <input type="time" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Travelers</label>
+                            <input type="number" id="travelers" min="1" value="1" required onchange="calculatePrice()">
+                        </div>
+                        <div class="input-group">
+                            <label>Duration (Nights)</label>
+                            <input type="number" id="duration" min="1" value="2" required onchange="calculatePrice()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Services -->
+                <div class="form-section">
+                    <h3>🛠️ Travel & Stay</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Transport Mode</label>
+                            <select id="transportSelect" required onchange="calculatePrice()">
+                                <option value="0">Self / None (₹0)</option>
+                                <option value="1500">Bus (AC Volvo) (+₹1,500/p)</option>
+                                <option value="2500">Train (Sleeper/AC) (+₹2,500/p)</option>
+                                <option value="5000">Car Rental (Sedan) (+₹5,000 flat)</option>
+                                <option value="8000">Car Rental (SUV) (+₹8,000 flat)</option>
+                                <option value="6000">Flight (Economy) (+₹6,000/p)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Accommodation</label>
+                            <select id="hotelSelect" required onchange="calculatePrice()">
+                                <option value="0">Not Included (₹0)</option>
+                                <option value="1200">Standard Hotel (₹1,200/n)</option>
+                                <option value="3000">Premium Resort (₹3,000/n)</option>
+                                <option value="6000">Luxury Villa (₹6,000/n)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Personal Info & Requests -->
+                <div class="form-section">
+                    <h3>👤 Guest Details</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>First Name</label>
+                            <input type="text" placeholder="Rahul" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Last Name</label>
+                            <input type="text" placeholder="Kumar" required>
+                        </div>
+                        <div class="input-group full-width">
+                            <label>Email</label>
+                            <input type="email" placeholder="rahul@example.com" required>
+                        </div>
+                        <div class="input-group full-width">
+                            <label>Special Requests (Optional)</label>
+                            <textarea placeholder="Any dietary restrictions, accessibility needs, or special occasions?"
+                                rows="3"
+                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms" style="font-size: 0.9rem; cursor: pointer;">I agree to the <a href="#"
+                            style="color: var(--primary-color);">Terms and Conditions</a> and Cancellation
+                        Policy.</label>
+                </div>
+
+                <!-- Pro Subscription Toggle -->
+                <div class="pro-toggle-section"
+                    style="background: linear-gradient(135deg, #111, #333); padding: 15px; border-radius: 10px; color: #FFD700; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <strong style="display: block;">Activate VAHAD PRO</strong>
+                        <span style="font-size: 0.8rem; color: #ccc;">Get 10% instant discount + VIP perks</span>
+                    </div>
+                    <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                        <input type="checkbox" id="proToggle" onchange="calculatePrice()">
+                        <span class="slider round"
+                            style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px;"></span>
+                        <style>
+                            .switch input:checked+.slider {
+                                background-color: #FFD700;
+                            }
+
+                            .switch input:checked+.slider:before {
+                                transform: translateX(24px);
+                            }
+
+                            .slider:before {
+                                position: absolute;
+                                content: "";
+                                height: 20px;
+                                width: 20px;
+                                left: 3px;
+                                bottom: 3px;
+                                background-color: white;
+                                transition: .4s;
+                                border-radius: 50%;
+                            }
+                        </style>
+                    </label>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Right Column: Sticky Summary -->
+        <div class="booking-sidebar">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <h3>Booking Summary</h3>
+                </div>
+                <div class="summary-row">
+                    <span>Base Package</span>
+                    <span id="basePriceDisplay">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Transport</span>
+                    <span id="transportPriceDisplay">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Accommodation</span>
+                    <span id="hotelPriceDisplay">₹0</span>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span class="price" id="totalPriceDisplay">₹0</span>
+                </div>
+
+                <p style="font-size: 0.8rem; color: #888; margin: 10px 0 20px; text-align: center;">Taxes & Fees
+                    included</p>
+
+                <button type="button" class="cta-btn auth-btn" onclick="proceedToPayment()" style="width: 100%;">
+                    Proceed to Pay →
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 VAHAD Tourist Management System</p>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        function proceedToPayment() {
+            // Validate Checkbox
+            if (!document.getElementById('terms').checked) {
+                alert("Please agree to the Terms and Conditions to proceed.");
+                return;
+            }
+
+            // Recalculate one last time to be sure
+            calculatePrice();
+
+            // Gather Data
+            const destinationSelect = document.getElementById('destinationSelect');
+            const destinationName = destinationSelect.options[destinationSelect.selectedIndex].text.split(' (')[0];
+            const startDate = document.querySelector('input[type="date"]').value;
+            const travelers = document.getElementById('travelers').value;
+            const duration = document.getElementById('duration').value;
+            const transportSelect = document.getElementById('transportSelect');
+            const transport = transportSelect.options[transportSelect.selectedIndex].text.split(' (')[0];
+            const hotelSelect = document.getElementById('hotelSelect');
+            const hotel = hotelSelect.options[hotelSelect.selectedIndex].text.split(' (')[0];
+            const totalText = document.getElementById('totalPriceDisplay').innerText;
+            const totalAmount = totalText.replace(/[^\d]/g, '');
+
+            // Save to LocalStorage for Confirmation Page
+            const bookingData = {
+                id: 'BKG-' + Math.floor(Math.random() * 1000000),
+                destination: destinationName,
+                date: startDate,
+                travelers: travelers,
+                duration: duration,
+                transport: transport,
+                hotel: hotel,
+                amount: totalText, // Store with symbol
+                status: 'Pending Payment'
+            };
+            localStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+
+            window.location.href = `payment.html?amount=${totalAmount}`;
+        }
+
+        function calculatePrice() {
+            // Inputs
+            const travelers = parseInt(document.getElementById('travelers').value) || 1;
+            const nights = parseInt(document.getElementById('duration').value) || 1;
+
+            // Selections
+            const basePackageCost = parseInt(document.getElementById('destinationSelect').value) || 0;
+            const transportCost = parseInt(document.getElementById('transportSelect').value) || 0;
+            const hotelCostPerNight = parseInt(document.getElementById('hotelSelect').value) || 0;
+
+            // Transport Logic Check
+            let totalTransport = 0;
+            if ([1500, 2500, 6000].includes(transportCost)) {
+                totalTransport = transportCost * travelers;
+            } else {
+                totalTransport = transportCost; // Flat rate for cars
+            }
+
+            // Hotel Cost
+            const totalHotel = hotelCostPerNight * nights;
+
+            // Base Package
+            const totalBase = basePackageCost * travelers;
+
+            // Grand Total
+            let grandTotal = totalBase + totalTransport + totalHotel;
+
+            // Apply Pro Discount
+            const isPro = document.getElementById('proToggle') && document.getElementById('proToggle').checked;
+            if (isPro) {
+                grandTotal = grandTotal * 0.9; // 10% Discount
+            }
+
+            // Update UI
+            document.getElementById('basePriceDisplay').innerText = '₹' + totalBase.toLocaleString();
+            document.getElementById('transportPriceDisplay').innerText = '₹' + totalTransport.toLocaleString();
+            document.getElementById('hotelPriceDisplay').innerText = '₹' + totalHotel.toLocaleString();
+            document.getElementById('totalPriceDisplay').innerText = '₹' + grandTotal.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+            if (isPro) {
+                document.getElementById('totalPriceDisplay').style.color = '#228B22'; // Green for discount
+            } else {
+                document.getElementById('totalPriceDisplay').style.color = 'var(--primary-color)';
+            }
+        }
+
+        window.onload = function () {
+            // Pre-select destination from URL if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const place = urlParams.get('place');
+            if (place) {
+                const searchKey = place.split(' ')[0].toLowerCase(); // e.g., "Goa Beaches" -> "goa"
+                const select = document.getElementById('destinationSelect');
+                for (let i = 0; i < select.options.length; i++) {
+                    // Match if the option text contains the first word of the query (e.g., "Goa (₹8,000)" contains "goa")
+                    if (select.options[i].text.toLowerCase().includes(searchKey)) {
+                        select.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            calculatePrice();
+        };
+    </script>
+</body>
+
+</html>

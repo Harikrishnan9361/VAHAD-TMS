@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations - VAHAD</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .page-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/hero_bg.png');
+            background-size: cover;
+            background-position: center;
+            padding: 150px 20px 80px;
+            text-align: center;
+            color: white;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 20px;
+            margin: -30px auto 40px;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto 50px;
+        }
+
+        .place-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .place-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .place-img {
+            height: 200px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .place-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .place-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .place-location {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .place-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .detail-item {
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+
+        .place-price {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-top: auto;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .book-btn:hover {
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body id="page-destinations">
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html"
+                    style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;">
+                    <div class="logo-icon">✈️</div>
+                    <span class="logo-text">VAHAD</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="rewards.html" style="color: #FFD700; font-weight: 600;">👑 Rewards</a></li>
+                <li><a href="destinations.html" class="active">Destinations</a></li>
+                <li><a href="about.html">About</a></li>
+
+                <!-- Auth Section: Will be toggled by JS -->
+                <li id="authLinks">
+                    <a href="login.html" class="nav-btn">Login</a>
+                    <a href="register.html" class="nav-btn-highlight">Sign Up</a>
+                </li>
+
+                <!-- Profile Dropdown (Hidden by default) -->
+                <li id="profileSection" style="display: none; position: relative;">
+                    <div class="profile-trigger" onclick="toggleProfileMenu()"
+                        style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                        <img id="navAvatar" src="https://ui-avatars.com/api/?name=User" class="nav-user-img"
+                            style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        <span style="font-size: 0.9rem; font-weight: 600;">Account ▾</span>
+                    </div>
+                    <div id="profileDropdown"
+                        style="display: none; position: absolute; top: 100%; right: 0; background: white; width: 200px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; margin-top: 10px; border: 1px solid #eee;">
+                        <div style="padding: 15px; border-bottom: 1px solid #f5f5f5; background: #f9f9f9;">
+                            <strong style="display: block; color: #333;" id="navUserName">User</strong>
+                            <small style="color: #777;" id="navUserEmail">user@example.com</small>
+                        </div>
+                        <a href="my_bookings.html"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s;">🎫
+                            My Bookings</a>
+                        <a href="settings.html"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s;">⚙️
+                            Settings</a>
+                        <a href="#" onclick="logout()"
+                            style="display: block; padding: 12px 20px; color: #d32f2f; text-decoration: none; transition: background 0.2s;">🚪
+                            Log Out</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1>Explore Destinations</h1>
+        <p>Find your next perfect getaway from our 30+ premium selections</p>
+    </header>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterPlaces('all')">All</button>
+        <button class="filter-btn" onclick="filterPlaces('Beaches')">Beaches</button>
+        <button class="filter-btn" onclick="filterPlaces('Mountains')">Mountains</button>
+        <button class="filter-btn" onclick="filterPlaces('Temples')">Temples</button>
+        <button class="filter-btn" onclick="filterPlaces('Cities')">Cities</button>
+        <button class="filter-btn" onclick="filterPlaces('Forests')">Forests</button>
+        <button class="filter-btn" onclick="filterPlaces('Islands')">Islands</button>
+    </div>
+
+    <!-- Places Grid -->
+    <div class="places-grid" id="destinationsContainer">
+        <!-- JS Populated -->
+    </div>
+
+    <script>
+        // FULL Destination Data (25+ Items)
+        const allDestinations = [
+            { name: "Marina Beach, Chennai", location: "Tamil Nadu", category: "Beaches", season: "Nov-Feb", fee: "₹500", days: "2 Days", rating: "4.6", price: "2000", img: "https://loremflickr.com/500/350/chennai,beach" },
+            { name: "Yercaud, Salem", location: "Tamil Nadu", category: "Mountains", season: "Oct-Jun", fee: "₹800", days: "3 Days", rating: "4.5", price: "5000", img: "https://loremflickr.com/500/350/yercaud,mountain" },
+            { name: "Taj Mahal, Agra", location: "Uttar Pradesh", category: "Temples", season: "Oct-Mar", fee: "₹1200", days: "2 Days", rating: "4.9", price: "4500", img: "https://loremflickr.com/500/350/tajmahal" },
+            { name: "Goa Beaches", location: "Goa", category: "Beaches", season: "Nov-Feb", fee: "₹1000", days: "4 Days", rating: "4.8", price: "8000", img: "https://loremflickr.com/500/350/goa,beach" },
+            { name: "Manali", location: "Himachal Pradesh", category: "Mountains", season: "Dec-Feb", fee: "₹1500", days: "5 Days", rating: "4.7", price: "10000", img: "https://loremflickr.com/500/350/manali,snow" },
+            { name: "Kerala Backwaters", location: "Kerala", category: "Forests", season: "Sep-Mar", fee: "₹800", days: "5 Days", rating: "4.9", price: "12000", img: "https://loremflickr.com/500/350/kerala,boat" },
+            { name: "Varanasi", location: "Uttar Pradesh", category: "Temples", season: "Nov-Mar", fee: "₹500", days: "2 Days", rating: "4.6", price: "5000", img: "https://loremflickr.com/500/350/varanasi,ganga" },
+            { name: "Jaipur", location: "Rajasthan", category: "Cities", season: "Oct-Mar", fee: "₹1000", days: "3 Days", rating: "4.8", price: "7500", img: "https://loremflickr.com/500/350/jaipur,palace" },
+            { name: "Coorg", location: "Karnataka", category: "Forests", season: "Oct-Mar", fee: "₹600", days: "3 Days", rating: "4.7", price: "6000", img: "https://loremflickr.com/500/350/coorg,coffee" },
+            { name: "Rishikesh", location: "Uttarakhand", category: "Mountains", season: "Sep-Jun", fee: "₹800", days: "4 Days", rating: "4.9", price: "8500", img: "https://loremflickr.com/500/350/rishikesh,river" },
+            { name: "Andaman Islands", location: "Andaman", category: "Islands", season: "Oct-May", fee: "₹2000", days: "6 Days", rating: "5.0", price: "25000", img: "https://loremflickr.com/500/350/andaman,beach" },
+            { name: "Mysore", location: "Karnataka", category: "Cities", season: "Oct-Mar", fee: "₹500", days: "2 Days", rating: "4.6", price: "4000", img: "https://loremflickr.com/500/350/mysore,palace" },
+            { name: "Kodaikanal", location: "Tamil Nadu", category: "Mountains", season: "Sep-May", fee: "₹700", days: "3 Days", rating: "4.8", price: "6500", img: "https://loremflickr.com/500/350/kodaikanal,lake" },
+            { name: "Erode", location: "Tamil Nadu", category: "Cities", season: "Oct-Mar", fee: "₹300", days: "2 Days", rating: "4.3", price: "3000", img: "https://loremflickr.com/500/350/temple,erode" }, // Placeholder fallback
+            { name: "Ooty", location: "Tamil Nadu", category: "Mountains", season: "All Year", fee: "₹600", days: "3 Days", rating: "4.7", price: "7000", img: "https://loremflickr.com/500/350/ooty,tea" },
+            { name: "Madurai", location: "Tamil Nadu", category: "Temples", season: "Oct-Mar", fee: "₹400", days: "2 Days", rating: "4.8", price: "3500", img: "https://loremflickr.com/500/350/madurai,temple" },
+            { name: "Ladakh", location: "J&K", category: "Mountains", season: "Jun-Sep", fee: "₹2500", days: "7 Days", rating: "4.9", price: "15000", img: "https://loremflickr.com/500/350/ladakh,mountain" },
+            { name: "Jaisalmer", location: "Rajasthan", category: "Deserts", season: "Oct-Mar", fee: "₹1200", days: "4 Days", rating: "4.7", price: "9000", img: "https://loremflickr.com/500/350/jaisalmer,desert" },
+            { name: "Lakshadweep", location: "Lakshadweep", category: "Islands", season: "Oct-May", fee: "₹5000", days: "5 Days", rating: "5.0", price: "30000", img: "https://loremflickr.com/500/350/lakshadweep,island" },
+            { name: "Hampi", location: "Karnataka", category: "Temples", season: "Oct-Feb", fee: "₹500", days: "3 Days", rating: "4.8", price: "6000", img: "https://loremflickr.com/500/350/hampi,ruins" },
+            { name: "Darjeeling", location: "West Bengal", category: "Mountains", season: "Apr-Jun", fee: "₹1000", days: "4 Days", rating: "4.6", price: "7000", img: "https://loremflickr.com/500/350/darjeeling,mountain" },
+            { name: "Mumbai", location: "Maharashtra", category: "Cities", season: "Nov-Feb", fee: "₹1500", days: "3 Days", rating: "4.7", price: "8000", img: "https://loremflickr.com/500/350/mumbai,gateway" },
+            { name: "Udaipur", location: "Rajasthan", category: "Cities", season: "Sep-Mar", fee: "₹1200", days: "3 Days", rating: "4.9", price: "10000", img: "https://loremflickr.com/500/350/udaipur,lake" },
+            { name: "Shillong", location: "Meghalaya", category: "Mountains", season: "Sep-May", fee: "₹1000", days: "4 Days", rating: "4.5", price: "9500", img: "https://loremflickr.com/500/350/shillong,waterfall" },
+            { name: "Varkala", location: "Kerala", category: "Beaches", season: "Oct-Mar", fee: "₹600", days: "3 Days", rating: "4.7", price: "6000", img: "https://loremflickr.com/500/350/varkala,cliff" },
+            { name: "Pondicherry", location: "Pondicherry", category: "Beaches", season: "Oct-Mar", fee: "₹800", days: "3 Days", rating: "4.6", price: "5500", img: "https://loremflickr.com/500/350/pondicherry,french" },
+            { name: "Sundarbans", location: "West Bengal", category: "Forests", season: "Sep-Mar", fee: "₹2000", days: "4 Days", rating: "4.4", price: "8000", img: "https://loremflickr.com/500/350/sundarban,tiger" },
+            { name: "Kaziranga", location: "Assam", category: "Forests", season: "Nov-Apr", fee: "₹1500", days: "5 Days", rating: "4.8", price: "11000", img: "https://loremflickr.com/500/350/kaziranga,rhino" },
+            { name: "Gokarna", location: "Karnataka", category: "Beaches", season: "Oct-Mar", fee: "₹500", days: "3 Days", rating: "4.5", price: "4000", img: "https://loremflickr.com/500/350/gokarna,beach" },
+            { name: "Golden Temple", location: "Punjab", category: "Temples", season: "Oct-Mar", fee: "₹0", days: "2 Days", rating: "5.0", price: "3000", img: "https://loremflickr.com/500/350/goldentemple,amritsar" }
+        ];
+
+        function renderDestinations() {
+            const container = document.getElementById('destinationsContainer');
+            container.innerHTML = '';
+
+            allDestinations.forEach(place => {
+                const card = document.createElement('div');
+                card.className = 'place-card';
+                card.dataset.category = place.category;
+
+                // Construct the HTML
+                card.innerHTML = `
+                    <div class="place-img" style="background-image: url('${place.img}');"></div>
+                    <div class="place-content">
+                        <h3 class="place-title">${place.name}</h3>
+                        <div class="place-location">📍 ${place.location}</div>
+                        <div class="place-details-grid">
+                            <div class="detail-item"><strong>Best Season</strong>${place.season}</div>
+                            <div class="detail-item"><strong>Travel Fee</strong>${place.fee}</div>
+                            <div class="detail-item"><strong>Duration</strong>${place.days}</div>
+                            <div class="detail-item"><strong>Rating</strong>${place.rating} ★</div>
+                            <div class="detail-item" style="grid-column: span 2; background: #e0f7fa; padding: 2px 5px; border-radius: 4px; color: #006064; text-align: center;"><strong>Vahad Special Hotels</strong>₹${parseInt(place.price) * 0.4} Only</div>
+                        </div>
+                        <div class="place-price">₹${parseInt(place.price).toLocaleString()} <span style="font-size: 0.8rem; color: #777;">/ person</span></div>
+                        <button class="book-btn" onclick="bookPlace('${place.name}')">Book Now</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', renderDestinations);
+    </script>
+
+    <!-- Rich Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>✈️ VAHAD</h3>
+                <p>Your smart companion for seamless travel experiences across India. Discover, Book, and Enjoy.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="destinations.html">Destinations</a></li>
+                    <li><a href="rewards.html">Rewards</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Newsletter</h3>
+                <p>Subscribe for latest travel offers.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                    <input type="email" placeholder="Email Address" required>
+                    <button type="submit">Go</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VAHAD Tourist Management System | Designed for Smart Travel</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Filters
+        function filterPlaces(criteria) {
+            const cards = document.querySelectorAll('.place-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            if (['Beaches', 'Mountains', 'Temples', 'Cities', 'Forests', 'Deserts', 'Islands', 'all'].includes(criteria)) {
+                buttons.forEach(btn => btn.classList.remove('active'));
+                const activeBtn = Array.from(buttons).find(b => b.innerText === criteria || (criteria === 'all' && b.innerText === 'All'));
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+
+            cards.forEach(card => {
+                const category = card.dataset.category;
+                const matchesCategory = (criteria === 'all' || category === criteria);
+                card.style.display = matchesCategory ? 'flex' : 'none';
+            });
+        }
+
+        // Simple Book function placeholder
+        function bookPlace(placeName) {
+            window.location.href = `booking.html?place=${placeName}`;
+        }
+
+        // Avatar selector logic
+        const profileSection = document.getElementById('profile-section');
+        const userAvatar = document.getElementById('user-avatar');
+
+        // Load saved avatar
+        const savedAvatar = localStorage.getItem('userAvatar');
+        if (savedAvatar) {
+            userAvatar.src = savedAvatar;
+        }
+
+        profileSection.addEventListener('click', () => {
+            const newAvatarConf = confirm("Do you want to change your avatar?");
+            if (newAvatarConf) {
+                // Simplified for demo: cycle through a few presets or prompt for URL
+                const presets = [
+                    "https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff&rounded=true",
+                    "https://ui-avatars.com/api/?name=Alex&background=random&rounded=true",
+                    "https://ui-avatars.com/api/?name=Sarah&background=random&rounded=true",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
+                ];
+                let currentSrc = userAvatar.src;
+                let nextIndex = (presets.indexOf(currentSrc) + 1) % presets.length;
+                if (nextIndex === -1) nextIndex = 0; // if custom or not found
+
+                const nextAvatar = presets[nextIndex];
+                userAvatar.src = nextAvatar;
+                localStorage.setItem('userAvatar', nextAvatar);
+                alert("Avatar updated!");
+            }
+        });
+
+    </script>
+</body>
+
+</html>

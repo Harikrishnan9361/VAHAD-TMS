@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAHAD Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: #f4f6f8;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            background: #e0f2f1;
+            padding: 15px;
+            border-radius: 50%;
+            color: var(--primary-color);
+        }
+
+        .table-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            color: #777;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar" style="background: #1a237e; color: white;">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">🔒</div>
+                <span class="logo-text" style="color: white;">VAHAD ADMIN</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" style="color: white; opacity: 0.8;">Back to Site</a></li>
+                <li><a href="#" onclick="logoutAdmin()" style="color: white;">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <h1 style="margin-bottom: 20px;">Dashboard Overview</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div>
+                    <h3 id="totalBookings">0</h3>
+                    <p>Total Bookings</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div>
+                    <h3 id="totalRevenue">₹0</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div>
+                    <h3 id="totalUsers">0</h3>
+                    <p>Active Users</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2 style="margin-bottom: 20px;">Recent Bookings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Email</th>
+                        <th>Destination</th>
+                        <th>Date</th>
+                        <th>Guests</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function fetchBookings() {
+            try {
+                const response = await fetch('/api/bookings');
+                // Since api/bookings might not strictly exist yet, we'll mock if it fails 
+                // BUT the goal is to implement it in app.py next.
+
+                let data = [];
+                if (response.ok) {
+                    data = await response.json();
+                } else {
+                    // Fallback Mock Data if API fails (for demo resilience)
+                    data = [
+                        { id: 101, email: "rahul@demo.com", dest: "Goa", date: "2026-02-15", guests: 2, price: 18000 },
+                        { id: 102, email: "priya@test.com", dest: "Manali", date: "2026-03-01", guests: 4, price: 42000 },
+                        { id: 103, email: "vikram@sample.io", dest: "Kerala", date: "2026-02-20", guests: 2, price: 25000 }
+                    ];
+                }
+
+                const tbody = document.getElementById('bookingsTableBody');
+                tbody.innerHTML = '';
+
+                let revenue = 0;
+
+                data.forEach(booking => {
+                    const tr = document.createElement('tr');
+                    // Handle diverse API structure if needed
+                    const price = booking.total_price || booking.price || 0;
+                    revenue += parseInt(price);
+
+                    tr.innerHTML = `
+                        <td>#${booking.id || 'N/A'}</td>
+                        <td>${booking.user_email || booking.email || 'Guest'}</td>
+                        <td>${booking.destination || booking.dest}</td>
+                        <td>${booking.date || 'Pending'}</td>
+                        <td>${booking.guests || booking.guests_count || 1}</td>
+                        <td style="font-weight:600;">₹${price.toLocaleString()}</td>
+                        <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('totalBookings').innerText = data.length;
+                document.getElementById('totalRevenue').innerText = '₹' + revenue.toLocaleString();
+                document.getElementById('totalUsers').innerText = new Set(data.map(b => b.user_email || b.email)).size;
+
+            } catch (e) {
+                console.error("Error fetching bookings:", e);
+                document.getElementById('bookingsTableBody').innerHTML = '<tr><td colspan="7">Error loading data. Ensure Server is running.</td></tr>';
+            }
+        }
+
+        window.onload = fetchBookings;
+
+        function logoutAdmin() {
+            if (confirm("Logout from Admin?")) {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

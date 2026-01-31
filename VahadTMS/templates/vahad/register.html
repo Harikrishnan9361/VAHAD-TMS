@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Vahad - Premium Travel</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            overflow: hidden;
+            background-color: var(--bg-light);
+        }
+
+        /* Reuse auth styles */
+        .split-screen-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .auth-visual {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 50px;
+            color: white;
+        }
+
+        .visual-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.1));
+            z-index: 1;
+        }
+
+        .auth-visual-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .auth-visual-content h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .visual-badges {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .v-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .auth-form-container {
+            flex: 0 0 500px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-form-card {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .logo-small {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+        }
+
+        .auth-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .auth-submit-btn:hover {
+            background: var(--accent-color);
+        }
+
+        .auth-redirect {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .auth-redirect a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .split-screen-container {
+                flex-direction: column;
+            }
+
+            .auth-visual {
+                flex: 0 0 250px;
+            }
+
+            .auth-form-container {
+                flex: 1;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body id="page-auth">
+
+    <div class="split-screen-container">
+        <!-- Left Side: Visual -->
+        <div class="auth-visual" style="background-image: url('images/cat_temple.png');">
+            <div class="auth-visual-content">
+                <h1>Discover India's<br>Hidden Gems</h1>
+                <p>Join VAHAD today and unlock exclusive access to premium stays, curated itineraries, and member-only
+                    rewards.</p>
+                <div class="visual-badges">
+                    <span class="v-badge">🏝️ 50+ Destinations</span>
+                    <span class="v-badge">💎 Gold Rewards</span>
+                </div>
+            </div>
+            <div class="visual-overlay"></div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="auth-form-container">
+            <div class="glass-form-card">
+                <div class="form-header">
+                    <div class="logo-small">✈️ VAHAD</div>
+                    <h2>Create Account</h2>
+                    <p>Start your journey with us.</p>
+                </div>
+
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Full Name</label>
+                            <input type="text" id="regName" placeholder="John Doe" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="regPhone" placeholder="+91 98765 43210" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="regEmail" placeholder="john@example.com" required>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>City</label>
+                            <input type="text" id="regCity" placeholder="Mumbai" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Password</label>
+                            <input type="password" id="regPassword" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <label style="display: flex; align-items: center; gap: 5px; font-size: 0.9rem;">
+                            <input type="checkbox" required>
+                            <span>I agree to the <a href="#">Terms</a> & <a href="#">Privacy Policy</a></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn">Sign Up Now</button>
+
+                    <div class="auth-redirect">
+                        Already a member? <a href="login.html">Log In</a>
+                    </div>
+                </form>
+
+                <script>
+                    function handleRegister(e) {
+                        e.preventDefault();
+                        const name = document.getElementById('regName').value;
+                        const email = document.getElementById('regEmail').value;
+
+                        // Mock Registration
+                        localStorage.setItem('userProfile', JSON.stringify({
+                            name: name,
+                            email: email,
+                            avatar: 'https://ui-avatars.com/api/?name=' + name + '&background=0D8ABC&color=fff'
+                        }));
+
+                        const btn = e.target.querySelector('button');
+                        btn.innerText = 'Creating Account...';
+
+                        setTimeout(() => {
+                            alert('Registration Successful! Please Log In.');
+                            window.location.href = 'login.html';
+                        }, 1000);
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
