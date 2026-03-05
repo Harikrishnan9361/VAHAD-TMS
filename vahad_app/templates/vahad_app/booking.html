@@ -1,0 +1,305 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Book Your Trip - VAHAD{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --paper-bg: #fff;
+        --gold-accents: #D4AF37;
+        --navy-dark: #0f172a;
+        --soft-gray: #f8fafc;
+    }
+
+    body {
+        background-color: var(--soft-gray);
+    }
+
+    .booking-container {
+        max-width: 1100px;
+        margin: 50px auto 100px;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 40px;
+        padding: 0 20px;
+    }
+
+    .booking-form-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .booking-summary-card {
+        background: var(--navy-dark);
+        color: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 2rem;
+        color: var(--navy-dark);
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #475569;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: 0.2s;
+        font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--navy-dark);
+        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+    }
+
+    .row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    /* Destination Header in Summary */
+    .summary-header {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+
+    .dest-thumb {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        object-fit: cover;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+
+    .total-row {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--gold-accents);
+    }
+
+    .btn-pay {
+        background: var(--gold-accents);
+        color: var(--navy-dark);
+        width: 100%;
+        padding: 18px;
+        border-radius: 12px;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-top: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-2px);
+        filter: brightness(110%);
+    }
+
+    .guest-badge {
+        background: #f1f5f9;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #475569;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="booking-container">
+
+    <!-- LEFT: FORM -->
+    <div class="booking-form-card">
+        <h1>Details Required</h1>
+
+        <div class="guest-badge">
+            👤 Logged in as: <strong>{{ request.user.username }}</strong>
+        </div>
+
+        <form method="POST" action="{% url 'booking' destination.id %}" id="bookingForm">
+            {% csrf_token %}
+
+            <!-- Full Name (Readonly or Editable) -->
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" value="{{ request.user.first_name }} {{ request.user.last_name }}"
+                    placeholder="Your Full Name">
+            </div>
+
+            <!-- Date & Travelers -->
+            <div class="row-2">
+                <div class="form-group">
+                    <label class="form-label">Travel Date</label>
+                    <input type="date" name="travel_date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Members (Travelers)</label>
+                    <input type="number" name="num_travelers" id="numTravelers" class="form-input" value="1" min="1"
+                        max="20" required>
+                </div>
+            </div>
+
+            <!-- Hotel & Transport -->
+            <div class="row-2">
+                <div class="form-group">
+                    <label class="form-label">Hotel Preference</label>
+                    <select name="hotel_type" id="hotelType" class="form-select">
+                        <option value="Standard" selected>Standard (1x)</option>
+                        <option value="Budget">Budget (0.8x)</option>
+                        <option value="Luxury">Luxury Suite (2.5x)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mode of Travel</label>
+                    <select name="transport" class="form-select">
+                        <option value="Flight">Flight</option>
+                        <option value="Train">Express Train</option>
+                        <option value="Bus">Volvo Bus</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Special Requests (ADD MORE YOU) -->
+            <div class="form-group">
+                <label class="form-label">Special Requests (Optional)</label>
+                <textarea class="form-input" rows="3"
+                    placeholder="Any specific requirements? e.g. Wheelchair access, Veg meal..."></textarea>
+            </div>
+
+            <!-- Contact & Address -->
+            <div class="form-group">
+                <label class="form-label">Contact Number</label>
+                <input type="tel" class="form-input" placeholder="+91 98765 43210"
+                    value="{{ request.user.userprofile.phone }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Address (Optional)</label>
+                <input type="text" class="form-input" placeholder="House No, Street, City">
+            </div>
+
+            <button type="submit" class="btn-pay">Proceed to Pay ➔</button>
+        </form>
+    </div>
+
+    <!-- RIGHT: ESTIMATOR -->
+    <div class="booking-summary-card">
+        <div class="summary-header">
+            {% if destination.image %}
+            <img src="{{ destination.image.url }}" class="dest-thumb">
+            {% endif %}
+            <div>
+                <h3 style="margin: 0; font-size: 1.2rem;">{{ destination.name }}</h3>
+                <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">{{ destination.location }}</div>
+            </div>
+        </div>
+
+        <h4 style="margin-bottom: 20px; color: var(--gold-accents);">Price Estimation</h4>
+
+        <div class="price-row">
+            <span>Base Price (per person)</span>
+            <span>₹{{ destination.price_estimate }}</span>
+        </div>
+
+        <div class="price-row">
+            <span>Travelers</span>
+            <span id="displayTravelers">x 1</span>
+        </div>
+
+        <div class="price-row">
+            <span>Hotel Multiplier</span>
+            <span id="displayMultiplier">1.0x</span>
+        </div>
+
+        <div class="total-row">
+            <span>Estimated Total</span>
+            <span id="estimatedTotal">₹{{ destination.price_estimate }}</span>
+        </div>
+
+        <div style="margin-top: 30px; font-size: 0.85rem; opacity: 0.7; text-align: center;">
+            *Final tax calculation will be added at payment.
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Real-time Calculation
+    const basePrice = parseFloat("{{ destination.price_estimate }}");
+    const travelersInput = document.getElementById('numTravelers');
+    const hotelSelect = document.getElementById('hotelType');
+
+    // Display Elements
+    const displayTravelers = document.getElementById('displayTravelers');
+    const displayMultiplier = document.getElementById('displayMultiplier');
+    const estimatedTotal = document.getElementById('estimatedTotal');
+
+    function calculateTotal() {
+        const travelers = parseInt(travelersInput.value) || 1;
+
+        // Multiplier Logic Match Backend
+        let multiplier = 1.0;
+        const hotel = hotelSelect.value;
+        if (hotel === 'Budget') multiplier = 0.8;
+        if (hotel === 'Luxury') multiplier = 2.5;
+
+        const total = basePrice * travelers * multiplier;
+
+        // Update UI
+        displayTravelers.innerText = `x ${travelers}`;
+        displayMultiplier.innerText = `${multiplier}x`;
+        estimatedTotal.innerText = '₹' + total.toFixed(2);
+    }
+
+    travelersInput.addEventListener('input', calculateTotal);
+    hotelSelect.addEventListener('change', calculateTotal);
+
+    // Init
+    calculateTotal();
+</script>
+{% endblock %}

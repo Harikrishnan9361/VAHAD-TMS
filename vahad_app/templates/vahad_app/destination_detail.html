@@ -1,0 +1,58 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/destination.css' %}">
+{% endblock %}
+
+{% block title %}{{ destination.name }} - VAHAD{% endblock %}
+
+{% block content %}
+<section class="dest-hero"
+    style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{% if destination.image %}{{ destination.image.url }}{% else %}https://images.unsplash.com/photo-1542314831-068cd1dbfeeb{% endif %}') center/cover;">
+    <h1>{{ destination.name }}</h1>
+    <p>{{ destination.location }}</p>
+</section>
+
+<div class="dest-info-bar">
+    <div class="info-card">
+        <span style="font-size: 2rem;">⏳</span>
+        <p>Best Time</p>
+        <strong>{{ destination.best_time_to_visit }}</strong>
+    </div>
+    <div class="info-card">
+        <span style="font-size: 2rem;">🏷️</span>
+        <p>Price From</p>
+        <strong style="color: var(--secondary-color);">₹{{ destination.price_estimate }}</strong>
+    </div>
+    <div class="info-card">
+        <span style="font-size: 2rem;">🏞️</span>
+        <p>Category</p>
+        <strong>{{ destination.category.name }}</strong>
+    </div>
+</div>
+
+<section class="section-container">
+    <div style="display: flex; flex-wrap: wrap; gap: 50px;">
+        <div style="flex: 2; min-width: 300px;">
+            <h2 style="text-align: left; margin-bottom: 20px;">About this destination</h2>
+            <p style="line-height: 1.8; color: #555;">{{ destination.description }}</p>
+
+            <div style="margin-top: 40px;">
+                <h3>Travel Tips</h3>
+                <p>Ensure you check weather forecasts before travel. Carry comfortable footwear and a camera to capture
+                    memories.</p>
+            </div>
+        </div>
+
+        <div
+            style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); height: fit-content;">
+            <h3 style="margin-top: 0;">Plan Your Trip</h3>
+            <p style="color: #777;">Ready to explore {{ destination.name }}? Connect with us to book your personalized
+                package.</p>
+            <a href="{% url 'booking' destination.id %}" class="btn-book-lg"
+                style="display: block; text-align: center; margin-top: 20px;">Book Now</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
