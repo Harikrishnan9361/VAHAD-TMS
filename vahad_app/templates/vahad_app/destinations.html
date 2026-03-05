@@ -1,0 +1,83 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/destination.css' %}">
+{% endblock %}
+
+{% block title %}Explore Destinations - VAHAD{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="page-header">
+    <h1>Explore Destinations</h1>
+    <p>Find your next perfect getaway from our premium selection</p>
+</header>
+
+<!-- Floating Filter Bar -->
+<div class="filter-bar">
+    <a href="{% url 'destinations' %}" class="filter-btn {% if not current_category %}active{% endif %}">All</a>
+    {% for category in categories %}
+    <a href="?category={{ category.id }}{% if search_query %}&q={{ search_query }}{% endif %}"
+        class="filter-btn {% if current_category == category.id %}active{% endif %}">
+        {{ category.name }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="container">
+    {% if search_query %}
+    <div style="margin-bottom: 20px;">
+        <p>Showing results for: <strong>{{ search_query }}</strong></p>
+    </div>
+    {% endif %}
+
+    <div class="places-grid">
+        {% for destination in destinations %}
+        <div class="place-card">
+            {% if destination.image %}
+            <div class="place-img" style="background-image: url('{{ destination.image.url }}');"></div>
+            {% else %}
+            <div class="place-img"
+                style="background-color: #eee; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                📍</div>
+            {% endif %}
+
+            <div class="place-content">
+                <h3 class="place-title">{{ destination.name }}</h3>
+                <div class="place-location">📍 {{ destination.location }}</div>
+
+                <div class="place-details-grid">
+                    <div class="detail-item">
+                        <strong>Best Season</strong>
+                        {{ destination.best_time_to_visit|default:"Sept - March" }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Category</strong>
+                        {{ destination.category.name }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Duration</strong>
+                        {% if "Beach" in destination.name %}2-3 Days{% else %}4-5 Days{% endif %}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Rating</strong>
+                        4.7 ★
+                    </div>
+                </div>
+
+                <div class="place-price">
+                    ₹{{ destination.price_estimate }} <span>/ person</span>
+                </div>
+
+                <a href="{% url 'booking' destination.id %}" class="book-btn">Book Now</a>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+            <p style="font-size: 1.2rem; color: #777;">No destinations found matching your criteria.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

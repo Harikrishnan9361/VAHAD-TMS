@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VAHAD - Tourist Management System{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container"
+            style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+            <div class="logo">
+                <a href="{% url 'home' %}"
+                    style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;">
+                    <span class="logo-icon">✈️</span>
+                    <span class="logo-text">VAHAD</span>
+                </a>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="nav-search search-bar">
+                <form action="{% url 'destinations' %}" method="GET" style="display: flex;">
+                    <input type="text" name="q" placeholder="Search places..." id="navSearchInput"
+                        value="{{ search_query|default:'' }}">
+                    <button type="submit"><i class="search-icon">🔍</i></button>
+                </form>
+            </div>
+
+            <!-- Location Dropdown -->
+            <div class="nav-location">
+                <span style="font-size: 0.9rem; color: #555;">📍</span>
+                <select class="location-select"
+                    style="border: none; outline: none; background: transparent; cursor: pointer;">
+                    <option>Mumbai</option>
+                    <option>Delhi</option>
+                    <option>Bangalore</option>
+                    <option>Chennai</option>
+                    <option>Kolkata</option>
+                </select>
+            </div>
+
+            <ul class="nav-links"
+                style="display: flex; list-style: none; gap: 10px; margin: 0; padding: 0; align-items: center;">
+                <li><a href="{% url 'home' %}"
+                        class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                </li>
+                <li><a href="{% url 'destinations' %}"
+                        class="nav-item {% if request.resolver_match.url_name == 'destinations' %}active{% endif %}">Destinations</a>
+                </li>
+                <li><a href="{% url 'about' %}"
+                        class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+                </li>
+
+                {% if user.is_authenticated %}
+                <li id="profileSection"
+                    style="position: relative; display: flex; align-items: center; gap: 10px; height: 100%;">
+
+                    <!-- Avatar Link -> Click goes to Profile -->
+                    <a href="{% url 'profile' %}" class="nav-avatar-link" style="text-decoration: none;">
+                        <div class="nav-avatar"
+                            style="width: 35px; height: 35px; border-radius: 50%; background: #f0faff; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid var(--secondary-color); cursor: pointer;">
+                            {% if user.userprofile.profile_photo %}
+                            <img src="{{ user.userprofile.profile_photo.url }}"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                            👤
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <!-- Dropdown Menu -> Shows on Hover -->
+                    <div id="profileDropdown" class="profile-dropdown-menu">
+                        <div style="padding: 15px 20px; background: #f9f9f9; border-bottom: 1px solid #eee;">
+                            <strong style="display: block; font-size: 0.85rem; color: #05e21b;">VAHAD</strong>
+                            <span style="font-size: 0.75rem; color: #777;">vahad@gmail.com</span>
+                        </div>
+                        <a href="{% url 'profile' %}"
+                            style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s; font-size: 0.9rem;">🎫
+                            My Bookings</a>
+                        <a href="{% url 'premium' %}"
+                            style="display: block; padding: 12px 20px; color: #856404; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s; font-size: 0.9rem; background: #fffdf5;">💎
+                            Go Premium</a>
+                        <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit"
+                                style="display: block; width: 100%; text-align: left; padding: 12px 20px; color: #d32f2f; background: none; border: none; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; font-weight: 600;">🚪
+                                Log Out</button>
+                        </form>
+                    </div>
+                </li>
+                {% else %}
+                <li id="authLinks">
+                    <a href="{% url 'login' %}"
+                        style="padding: 8px 20px; text-decoration: none; color: #007bff; border: 1px solid #007bff; border-radius: 20px; margin-right: 10px;">Login</a>
+                    <a href="{% url 'register' %}"
+                        style="padding: 8px 20px; text-decoration: none; color: #fff; background: #007bff; border-radius: 20px;">Sign
+                        Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Rich Footer -->
+    <footer>
+        <div class="footer-content" style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+            <div class="footer-section">
+                <h3>✈️ VAHAD</h3>
+                <p style="max-width: 300px;">Your smart companion for seamless travel experiences across India.
+                    Discover, Book, and Enjoy.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'destinations' %}">Destinations</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📧 info@vahad.com</p>
+                <p>📞 +91 98765 43210</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VAHAD Tourist Management System | Designed for Smart Travel</p>
+        </div>
+    </footer>
+
+    <style>
+        /* Dropdown Styles for Hover */
+        .profile-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            width: 220px;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+            z-index: 1001;
+            padding-top: 10px;
+            /* Spacer for hover area */
+            margin-top: 10px;
+        }
+
+        /* Show on Hover */
+        #profileSection:hover .profile-dropdown-menu {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navbar Link Styles */
+        .nav-item {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 81, 47, 0.05);
+            color: #FF512F;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(to right, #FF512F, #DD2476);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(221, 36, 118, 0.3);
+            border-color: transparent;
+        }
+    </style>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

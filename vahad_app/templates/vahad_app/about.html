@@ -1,0 +1,228 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}About VAHAD - The Future of Travel{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* UNIQUE MODERNIST THEME */
+    :root {
+        --accent-pink: #ff0055;
+        --accent-lime: #ccff00;
+        --deep-space: #0b0b0b;
+    }
+
+    body {
+        font-family: 'Space Grotesk', sans-serif;
+        background: #fff;
+    }
+
+    /* PARALLAX HERO */
+    .hero-text {
+        text-align: center;
+        padding: 120px 20px;
+        background: #f8f8f8;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-text h1 {
+        font-size: 5rem;
+        line-height: 0.9;
+        font-weight: 900;
+        letter-spacing: -2px;
+        color: var(--deep-space);
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-text span {
+        -webkit-text-stroke: 2px var(--accent-pink);
+        color: transparent;
+    }
+
+    /* FLOATING SHAPES */
+    .shape {
+        position: absolute;
+        filter: blur(40px);
+        z-index: 1;
+        opacity: 0.6;
+        animation: floatShape 10s ease-in-out infinite alternate;
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background: #ccff00;
+        top: -50px;
+        right: -50px;
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    }
+
+    .shape-2 {
+        width: 200px;
+        height: 200px;
+        background: #ff0055;
+        bottom: 20px;
+        left: -20px;
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+
+    @keyframes floatShape {
+        from {
+            transform: translate(0, 0);
+        }
+
+        to {
+            transform: translate(20px, 40px) rotate(10deg);
+        }
+    }
+
+    /* STORY CARD */
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 80px;
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 50px;
+        align-items: center;
+    }
+
+    .story-img-container {
+        position: relative;
+    }
+
+    .story-img {
+        width: 100%;
+        border-radius: 0;
+        filter: grayscale(100%);
+        transition: 0.5s;
+        box-shadow: 20px 20px 0 var(--deep-space);
+        border: 2px solid var(--deep-space);
+    }
+
+    .story-img-container:hover .story-img {
+        transform: translate(-10px, -10px);
+        box-shadow: 30px 30px 0 var(--accent-lime);
+        filter: grayscale(0%);
+    }
+
+    .futures-section {
+        background: var(--deep-space);
+        padding: 100px 20px;
+        color: white;
+        border-radius: 40px 40px 0 0;
+    }
+
+    .future-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 40px;
+        transition: 0.4s;
+    }
+
+    .future-card:hover {
+        background: var(--accent-pink);
+        transform: translateY(-15px) rotate(1deg);
+        color: white;
+        border-color: transparent;
+    }
+
+    .future-card:hover h3 {
+        color: white;
+    }
+
+    /* BUTTONS */
+    .btn-unique {
+        background: var(--deep-space);
+        color: white;
+        padding: 18px 40px;
+        border: none;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-unique:hover {
+        background: var(--accent-pink);
+        transform: translate(-5px, -5px);
+        box-shadow: 15px 15px 0 var(--deep-space);
+    }
+
+    .btn-glow {
+        background: white;
+        color: var(--deep-space);
+        border: 2px solid var(--deep-space);
+        padding: 16px 40px;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .btn-glow:hover {
+        background: var(--accent-lime);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Neomorphic Hero -->
+<div class="hero-text">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <h1 style="font-size: 3.5rem; color: #333; margin-bottom: 10px;">We Are <span style="color: #ff357a;">VAHAD</span>
+    </h1>
+    <p style="font-size: 1.2rem; color: #666; max-width: 700px; margin: 0 auto 40px;">
+        Redefining how the world experiences India. Merging technology with tradition to create seamless travel
+        memories.
+    </p>
+    <div style="display: flex; justify-content: center; gap: 30px;">
+        <a href="{% url 'rewards' %}" class="btn-unique">View Rewards</a> <!-- Unique Neomorphic Button -->
+        <a href="{% url 'destinations' %}" class="btn-glow">Explore Now</a> <!-- Unique Glow Button -->
+    </div>
+</div>
+
+<!-- Story Section -->
+<div class="story-grid">
+    <div>
+        <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80"
+            class="story-img">
+    </div>
+    <div>
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Not Just A Booking Platform</h2>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 20px;">
+            VAHAD started with a simple idea: Travel should be about the **experience**, not the hassle.
+            We replaced complex itineraries with AI-driven smart planning and generic tours with personalized
+            adventures.
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #555;">
+            From the snow-capped peaks of the Himalayas to the backwaters of Kerala, our team curates each journey with
+            precision and passion.
+        </p>
+    </div>
+</div>
+
+<!-- More Futures Section -->
+<div class="futures-section">
+    <h2 style="font-size: 2.5rem;">Coming Soon to VAHAD</h2>
+    <p style="opacity: 0.7;">We are constantly innovating. Here is what is next.</p>
+
+    <div class="futures-grid">
+        <div class="future-card">
+            <h3>🤖 AI Guide 2.0</h3>
+            <p>Real-time AR translation and historical narration while you visit monuments.</p>
+        </div>
+        <div class="future-card">
+            <h3>🌍 Carbon Neutral</h3>
+            <p>Eco-friendly travel badges and automated carbon offsetting for every mile you fly.</p>
+        </div>
+        <div class="future-card">
+            <h3>🚁 VAHAD Air</h3>
+            <p>Exclusive helicopter rides to remote valleys available directly in the app.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

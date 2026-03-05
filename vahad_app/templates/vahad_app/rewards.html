@@ -1,0 +1,240 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Loyalty Rewards - VAHAD{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --purple-glow: #8e2de2;
+        --blue-glow: #4a00e0;
+    }
+
+    /* UNIQUE DARK THEME FOR REWARDS */
+    body {
+        background: radial-gradient(circle at 10% 20%, rgb(0, 0, 0) 0%, rgb(20, 20, 30) 90.2%);
+        color: #fff;
+    }
+
+    /* OVERRIDE NAVBAR FOR THIS PAGE IF NEEDED OR KEEP TRANSPARENT */
+
+    .rewards-container {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+
+    .level-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 50px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .glow-ring {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+
+        background: conic-gradient(var(--purple-glow) {
+                    {
+                    points|default:"10"
+                }
+            }
+
+            %, #333 0);
+        margin: 0 auto 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 50px rgba(142, 45, 226, 0.3);
+    }
+
+    .glow-ring::before {
+        content: '';
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        background: #000;
+        border-radius: 50%;
+    }
+
+    .points-display {
+        position: relative;
+        z-index: 2;
+    }
+
+    .points-val {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(to right, #8e2de2, #4a00e0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .points-label {
+        display: block;
+        font-size: 0.9rem;
+        opacity: 0.7;
+        margin-top: -10px;
+    }
+
+    .level-badge {
+        background: linear-gradient(90deg, #ffd700, #ff8c00);
+        padding: 8px 20px;
+        border-radius: 50px;
+        color: #000;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        display: inline-block;
+        margin-bottom: 20px;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    /* REDEEM GRID */
+    .redeem-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 50px;
+    }
+
+    .redeem-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 30px;
+        transition: 0.3s;
+    }
+
+    .redeem-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-5px);
+        border-color: var(--purple-glow);
+    }
+
+    .icon-box {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    /* UNIQUE BUTTON */
+    .btn-claim {
+        background: transparent;
+        color: #fff;
+        border: 2px solid var(--purple-glow);
+        padding: 10px 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        transition: 0.4s;
+        font-weight: 700;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .btn-claim::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: var(--purple-glow);
+        z-index: -1;
+        transition: 0.4s;
+    }
+
+    .btn-claim:hover::before {
+        width: 100%;
+    }
+
+    .btn-claim:hover {
+        border-color: transparent;
+        box-shadow: 0 0 20px var(--purple-glow);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rewards-container">
+
+    <div class="level-card">
+        <div class="level-badge">⭐ {{ level }} Level</div>
+
+        <div class="glow-ring">
+            <div class="points-display">
+                <span class="points-val">{{ points }}</span>
+                <span class="points-label">Total Points</span>
+            </div>
+        </div>
+
+        <h2 style="margin: 0;">Unlock Your Next Adventure</h2>
+        <p style="opacity: 0.6; max-width: 500px; margin: 10px auto;">Earn 150 points for every booking. Redeem them for
+            exclusive vouchers, free stays, and travel gear.</p>
+
+        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 40px;">
+            <div>
+                <strong style="display: block; font-size: 1.5rem;">{{ bookings_count }}</strong>
+                <span style="font-size: 0.8rem; opacity: 0.5;">TRIPS COMPLETED</span>
+            </div>
+            <div>
+                <strong style="display: block; font-size: 1.5rem;">1,500</strong>
+                <span style="font-size: 0.8rem; opacity: 0.5;">NEXT TIER</span>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin-top: 60px; border-left: 4px solid var(--purple-glow); padding-left: 15px;">Redeem Rewards</h3>
+
+    <div class="redeem-grid">
+        <div class="redeem-item">
+            <div class="icon-box">🎟️</div>
+            <h4>Flat ₹500 Off</h4>
+            <p style="opacity: 0.6; font-size: 0.9rem;">Applicable on any flight booking above ₹5000.</p>
+            <div style="font-weight: bold; color: var(--purple-glow); margin-top: 15px;">500 Points</div>
+            <button class="btn-claim">Claim Voucher</button>
+        </div>
+
+        <div class="redeem-item">
+            <div class="icon-box">🏨</div>
+            <h4>Free Hotel Upgrade</h4>
+            <p style="opacity: 0.6; font-size: 0.9rem;">Upgrade from Standard to Luxury room for 1 night.</p>
+            <div style="font-weight: bold; color: var(--purple-glow); margin-top: 15px;">1200 Points</div>
+            <button class="btn-claim">Claim Upgrade</button>
+        </div>
+
+        <div class="redeem-item">
+            <div class="icon-box">🎒</div>
+            <h4>Travel Kit</h4>
+            <p style="opacity: 0.6; font-size: 0.9rem;">Exclusive VAHAD backpack and travel accessories.</p>
+            <div style="font-weight: bold; color: var(--purple-glow); margin-top: 15px;">2000 Points</div>
+            <button class="btn-claim">Claim Kit</button>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

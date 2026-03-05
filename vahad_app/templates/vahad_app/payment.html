@@ -1,0 +1,557 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Secure Checkout - VAHAD Luxury{% endblock %}
+
+{% block extra_css %}
+<!-- Google Fonts for Premium Feel -->
+<link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;600;800&display=swap"
+    rel="stylesheet">
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.95);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --navy-deep: #0a1128;
+        --navy-light: #1c2541;
+        --gold: #d4af37;
+        --gold-light: #f3e5ab;
+        --text-dark: #1e293b;
+        --text-gray: #64748b;
+        --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+    }
+
+    /* BACKGROUND DECORATION */
+    .bg-orb {
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+        filter: blur(80px);
+        z-index: -1;
+    }
+
+    .orb-1 {
+        top: -200px;
+        left: -200px;
+    }
+
+    .orb-2 {
+        bottom: -200px;
+        right: -200px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* CENTERED CARD LAYOUT */
+    .checkout-wrapper {
+        max-width: 580px;
+        margin: 20px auto;
+        perspective: 1000px;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        border: 1px solid #fff;
+        border-radius: 30px;
+        box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+        backdrop-filter: blur(20px);
+        padding: 50px;
+        position: relative;
+        overflow: hidden;
+        animation: cardFloat 1s ease-out;
+    }
+
+    @keyframes cardFloat {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* HEADER */
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .checkout-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: var(--navy-deep);
+        margin: 0 0 10px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .checkout-header p {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .badge-dest {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 5px 12px;
+        border-radius: 20px;
+        color: var(--navy-light);
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    /* PAYMENT TABS */
+    .payment-tabs {
+        background: #f8fafc;
+        padding: 6px;
+        border-radius: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 35px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .tab-btn {
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: var(--text-gray);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .tab-btn i {
+        font-size: 1.2rem;
+        margin-bottom: 2px;
+    }
+
+    .tab-btn:hover {
+        color: var(--navy-deep);
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .tab-btn.active {
+        background: #fff;
+        color: var(--navy-deep);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transform: translateY(0);
+    }
+
+    /* VAHAD PRO BANNER */
+    .pro-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 20px;
+        padding: 25px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 15px 30px -10px rgba(15, 23, 42, 0.3);
+        border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .pro-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
+        animation: rotateShine 10s linear infinite;
+    }
+
+    @keyframes rotateShine {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .pro-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .pro-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--gold);
+    }
+
+    .pro-desc {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        font-weight: 300;
+    }
+
+    .switch-pro {
+        position: relative;
+        width: 50px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 2;
+    }
+
+    .switch-pro::after {
+        content: '';
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 22px;
+        height: 22px;
+        background: #fff;
+        border-radius: 50%;
+        transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .switch-pro.active {
+        background: var(--gold);
+        border-color: var(--gold);
+    }
+
+    .switch-pro.active::after {
+        transform: translateX(22px);
+    }
+
+    /* FORM INPUTS */
+    .input-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .input-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-gray);
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+        display: block;
+    }
+
+    .noble-input {
+        width: 100%;
+        padding: 16px 20px;
+        background: #f8fafc;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        font-size: 1rem;
+        color: var(--navy-deep);
+        font-weight: 500;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+
+    .noble-input:focus {
+        background: #fff;
+        border-color: var(--navy-deep);
+        box-shadow: 0 0 0 4px rgba(10, 17, 40, 0.05);
+        outline: none;
+    }
+
+    .noble-input::placeholder {
+        color: #cbd5e1;
+    }
+
+    /* QR SCANNER */
+    .qr-box {
+        background: #fff;
+        border: 2px dashed #cbd5e1;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        margin-top: 10px;
+        position: relative;
+    }
+
+    .qr-box img {
+        width: 160px;
+        height: 160px;
+        mix-blend-mode: multiply;
+        margin-bottom: 15px;
+    }
+
+    .scanner-beam {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 2px;
+        background: #ef4444;
+        box-shadow: 0 0 10px #ef4444;
+        animation: beamScan 2s ease-in-out infinite;
+    }
+
+    @keyframes beamScan {
+
+        0%,
+        100% {
+            top: 40px;
+            opacity: 0;
+        }
+
+        50% {
+            top: 200px;
+            opacity: 1;
+        }
+    }
+
+    /* TOTAL & BUTTON */
+    .pay-btn-container {
+        margin-top: 40px;
+    }
+
+    .btn-pay-master {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        background: var(--navy-deep);
+        color: #fff;
+        border: none;
+        padding: 22px 30px;
+        border-radius: 16px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 10px 30px -5px rgba(10, 17, 40, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-pay-master:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px -5px rgba(10, 17, 40, 0.4);
+    }
+
+    .btn-pay-master .pay-label {
+        opacity: 0.9;
+        font-weight: 500;
+    }
+
+    .btn-pay-master .pay-amount {
+        font-size: 1.4rem;
+        color: var(--gold);
+        font-family: 'Playfair Display', serif;
+    }
+
+    .secure-badge {
+        text-align: center;
+        margin-top: 25px;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .secure-badge span {
+        width: 6px;
+        height: 6px;
+        background: #10b981;
+        border-radius: 50%;
+    }
+
+    /* ANIMATIONS FOR VIEWS */
+    .view-section {
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
+<div class="container">
+    <div class="checkout-wrapper">
+        <div class="glass-card">
+
+            <!-- Header -->
+            <div class="checkout-header">
+                <h1>Payment Details</h1>
+                <p>Complete your reservation securely</p>
+                <div class="badge-dest">✈ {{ booking.destination.name }}</div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="payment-tabs">
+                <button class="tab-btn active" onclick="switchTab('card')">
+                    <span>💳</span> Card
+                </button>
+                <button class="tab-btn" onclick="switchTab('upi')">
+                    <span>⚡</span> UPI
+                </button>
+                <button class="tab-btn" onclick="switchTab('cash')">
+                    <span>💵</span> Cash
+                </button>
+            </div>
+
+            <!-- Pro Upgrade -->
+            <div class="pro-banner">
+                <div class="pro-content">
+                    <div class="pro-title">👑 VAHAD Pro</div>
+                    <div class="pro-desc">No Cancel Fee • Priority Support</div>
+                </div>
+                <div class="switch-pro" id="proToggle" onclick="togglePro()"></div>
+            </div>
+
+            <!-- Card View -->
+            <div id="view-card" class="view-section">
+                <div class="input-group">
+                    <label class="input-label">Cardholder Name</label>
+                    <input type="text" class="noble-input" placeholder="e.g. John Doe">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Card Number</label>
+                    <input type="text" class="noble-input" placeholder="0000 0000 0000 0000">
+                </div>
+                <div style="display: flex; gap: 20px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label class="input-label">Expiry</label>
+                        <input type="text" class="noble-input" placeholder="MM/YY">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label class="input-label">CVC</label>
+                        <input type="password" class="noble-input" placeholder="123">
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPI View -->
+            <div id="view-upi" class="view-section" style="display: none;">
+                <div class="input-group">
+                    <label class="input-label">UPI ID / VPA</label>
+                    <input type="text" class="noble-input" placeholder="username@upi">
+                </div>
+                <div class="qr-box">
+                    <div class="scanner-beam"></div>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=VAHAD-Booking-{{ booking.booking_id }}"
+                        alt="QR">
+                    <p style="margin: 0; font-size: 0.9rem; color: #64748b;">Scanning for payment...</p>
+                </div>
+            </div>
+
+            <!-- Cash View -->
+            <div id="view-cash" class="view-section" style="display: none;">
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.8;">🏨</div>
+                    <h3 style="color: var(--navy-deep); margin: 0 0 10px 0;">Pay at Property</h3>
+                    <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6;">Your booking will be confirmed
+                        instantly. Present your ID at the front desk to complete payment.</p>
+                </div>
+            </div>
+
+            <!-- Payment Button -->
+            <div class="pay-btn-container">
+                <a href="{% url 'confirmation' booking.booking_id %}" class="btn-pay-master">
+                    <span class="pay-label">Complete Payment</span>
+                    <span class="pay-amount" id="displayPrice">₹{{ booking.total_price }}0</span>
+                    <!-- Added 0 for cents padding simulation if integer -->
+                </a>
+            </div>
+
+            <div class="secure-badge">
+                <span></span> Encrypted 256-bit Connection
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // TAB SWITCHING
+    function switchTab(method) {
+        // Active visual
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        // View toggle
+        document.querySelectorAll('.view-section').forEach(view => view.style.display = 'none');
+        document.getElementById('view-' + method).style.display = 'block';
+    }
+
+    // PRO TOGGLE LOGIC
+    let isPro = false;
+    // Safely parse float from string template
+    const basePrice = parseFloat("{{ booking.total_price }}");
+    const priceDisplay = document.getElementById('displayPrice');
+    const toggleBtn = document.getElementById('proToggle');
+
+    // Initial formatter (handles the template text 0 padding hack)
+    priceDisplay.innerText = '₹' + basePrice.toFixed(2);
+
+    function togglePro() {
+        isPro = !isPro;
+        toggleBtn.classList.toggle('active');
+
+        let finalPrice = basePrice;
+        if (isPro) {
+            finalPrice += 2999;
+        }
+
+        // Animate Price Change
+        priceDisplay.style.opacity = '0';
+        priceDisplay.style.transform = 'translateY(-10px)';
+
+        setTimeout(() => {
+            priceDisplay.innerText = '₹' + finalPrice.toFixed(2);
+            priceDisplay.style.opacity = '1';
+            priceDisplay.style.transform = 'translateY(0)';
+        }, 200);
+    }
+</script>
+{% endblock %}
