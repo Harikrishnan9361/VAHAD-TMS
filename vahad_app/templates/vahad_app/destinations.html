@@ -26,22 +26,35 @@
 </div>
 
 <div class="container">
-    {% if search_query %}
-    <div style="margin-bottom: 20px;">
-        <p>Showing results for: <strong>{{ search_query }}</strong></p>
+    <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <p style="font-size: 1.1rem; color: #555; margin: 0;">
+                Showing <strong>{{ destinations|length }}</strong> premium {% if destinations|length == 1 %}getaway{% else %}getaways{% endif %}
+                {% if current_location %}in <strong>{{ current_location }}</strong>{% endif %}
+                {% if search_query %}matching "<strong>{{ search_query }}</strong>"{% endif %}
+            </p>
+        </div>
+        {% if search_query or current_category or current_location %}
+        <div>
+            <a href="{% url 'destinations' %}" class="clear-filters-btn">Clear Filters ×</a>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 
     <div class="places-grid">
         {% for destination in destinations %}
         <div class="place-card">
-            {% if destination.image %}
-            <div class="place-img" style="background-image: url('{{ destination.image.url }}');"></div>
-            {% else %}
-            <div class="place-img"
-                style="background-color: #eee; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
-                📍</div>
-            {% endif %}
+            <div class="place-img-container">
+                {% if destination.image %}
+                <div class="place-img" style="background-image: url('{{ destination.image.url }}');"></div>
+                {% else %}
+                <div class="place-img placeholder-img">📍</div>
+                {% endif %}
+                {% if destination.is_featured %}
+                <span class="badge badge-featured">★ Featured</span>
+                {% endif %}
+                <span class="badge badge-category">{{ destination.category.name }}</span>
+            </div>
 
             <div class="place-content">
                 <h3 class="place-title">{{ destination.name }}</h3>
@@ -58,24 +71,27 @@
                     </div>
                     <div class="detail-item">
                         <strong>Duration</strong>
-                        {% if "Beach" in destination.name %}2-3 Days{% else %}4-5 Days{% endif %}
+                        {% if "Beach" in destination.name or "Goa" in destination.name %}3-4 Days{% elif "Munnar" in destination.name or "Ooty" in destination.name %}2-3 Days{% else %}4-5 Days{% endif %}
                     </div>
                     <div class="detail-item">
                         <strong>Rating</strong>
-                        4.7 ★
+                        {% if destination.is_featured %}4.9 ★{% else %}4.6 ★{% endif %}
                     </div>
                 </div>
 
-                <div class="place-price">
-                    ₹{{ destination.price_estimate }} <span>/ person</span>
+                <div class="place-footer">
+                    <div class="place-price">
+                        ₹{{ destination.price_estimate }}
+                        <span>/ person</span>
+                    </div>
+                    <a href="{% url 'booking' destination.id %}" class="book-btn">Book Now</a>
                 </div>
-
-                <a href="{% url 'booking' destination.id %}" class="book-btn">Book Now</a>
             </div>
         </div>
         {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
-            <p style="font-size: 1.2rem; color: #777;">No destinations found matching your criteria.</p>
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+            <p style="font-size: 1.3rem; color: #999; margin-bottom: 20px;">No destinations found matching your criteria.</p>
+            <a href="{% url 'destinations' %}" class="book-btn" style="display: inline-block; width: auto; padding: 10px 30px;">View All Destinations</a>
         </div>
         {% endfor %}
     </div>

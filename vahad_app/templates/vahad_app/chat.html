@@ -1,0 +1,616 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}VAHAD - AI Travel Assistant{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --chat-primary: #FF512F;
+        --chat-secondary: #DD2476;
+        --chat-bg: #ffffff;
+        --chat-panel-bg: rgba(255, 255, 255, 0.7);
+        --chat-text: #2d3748;
+        --chat-bot-bubble: #f7fafc;
+        --chat-user-bubble: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+    }
+
+    body {
+        background: radial-gradient(circle at 10% 20%, rgba(255, 154, 158, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(254, 207, 239, 0.2) 0%, transparent 40%),
+                    #fdfbf7;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .chat-page-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 30px;
+        min-height: 75vh;
+    }
+
+    /* Left Sidebar */
+    .chat-sidebar {
+        background: var(--chat-panel-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        height: fit-content;
+    }
+
+    .sidebar-title {
+        font-weight: 700;
+        font-size: 1.3rem;
+        background: linear-gradient(45deg, var(--chat-primary), var(--chat-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+    }
+
+    .sidebar-section h4 {
+        font-size: 0.95rem;
+        color: #718096;
+        margin-bottom: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .suggestion-chips {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .suggestion-btn {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #4a5568;
+        padding: 12px 16px;
+        border-radius: 14px;
+        text-align: left;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .suggestion-btn:hover {
+        background: linear-gradient(135deg, rgba(255, 81, 47, 0.05) 0%, rgba(221, 36, 118, 0.05) 100%);
+        border-color: #fbc2eb;
+        transform: translateY(-2px);
+        color: var(--chat-primary);
+        box-shadow: 0 4px 12px rgba(255, 81, 47, 0.08);
+    }
+
+    /* Chat Container */
+    .chat-box-container {
+        background: var(--chat-panel-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        height: 75vh;
+        overflow: hidden;
+    }
+
+    /* Chat Header */
+    .chat-box-header {
+        padding: 20px 30px;
+        background: rgba(255, 255, 255, 0.5);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .bot-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .bot-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        box-shadow: 0 4px 15px rgba(255, 81, 47, 0.2);
+    }
+
+    .bot-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bot-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #1a202c;
+    }
+
+    .bot-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: #48bb78;
+        font-weight: 500;
+    }
+
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #48bb78;
+        border-radius: 50%;
+        animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 6px rgba(72, 187, 120, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(72, 187, 120, 0);
+        }
+    }
+
+    /* Messages Area */
+    .chat-messages {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%;
+    }
+
+    .message-wrapper.bot {
+        align-self: flex-start;
+    }
+
+    .message-wrapper.user {
+        align-self: flex-end;
+    }
+
+    .message-bubble {
+        padding: 16px 20px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        word-wrap: break-word;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+    }
+
+    .message-wrapper.bot .message-bubble {
+        background-color: var(--chat-bot-bubble);
+        color: var(--chat-text);
+        border: 1px solid rgba(226, 232, 240, 0.7);
+        border-top-left-radius: 4px;
+    }
+
+    .message-wrapper.user .message-bubble {
+        background: var(--chat-user-bubble);
+        color: #ffffff;
+        border-top-right-radius: 4px;
+        box-shadow: 0 4px 15px rgba(255, 81, 47, 0.15);
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #a0aec0;
+        margin-top: 5px;
+        padding: 0 5px;
+    }
+
+    .message-wrapper.user .message-time {
+        text-align: right;
+    }
+
+    /* Input Area */
+    .chat-input-area {
+        padding: 20px 30px;
+        background: rgba(255, 255, 255, 0.6);
+        border-top: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .chat-input-form {
+        display: flex;
+        gap: 15px;
+        position: relative;
+    }
+
+    .chat-input {
+        flex: 1;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 16px 50px 16px 20px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: all 0.3s;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+        color: #2d3748;
+    }
+
+    .chat-input:focus {
+        border-color: #fbc2eb;
+        box-shadow: 0 0 0 3px rgba(255, 81, 47, 0.1);
+    }
+
+    .btn-send {
+        background: var(--chat-user-bubble);
+        color: white;
+        border: none;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(255, 81, 47, 0.2);
+    }
+
+    .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 81, 47, 0.3);
+    }
+
+    .btn-clear {
+        background: none;
+        border: none;
+        color: #718096;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-clear:hover {
+        color: var(--chat-primary);
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+    }
+
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: #a0aec0;
+        border-radius: 50%;
+        animation: typing 1s infinite alternate;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        from {
+            transform: translateY(0);
+            opacity: 0.4;
+        }
+        to {
+            transform: translateY(-6px);
+            opacity: 1;
+        }
+    }
+
+    /* Markdown inside bubbles */
+    .message-bubble p {
+        margin: 0 0 10px 0;
+    }
+    .message-bubble p:last-child {
+        margin-bottom: 0;
+    }
+    .message-bubble ul, .message-bubble ol {
+        margin: 5px 0 10px 20px;
+        padding: 0;
+    }
+    .message-bubble li {
+        margin-bottom: 5px;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .chat-page-container {
+            grid-template-columns: 1fr;
+            margin: 20px auto;
+        }
+        .chat-sidebar {
+            display: none; /* Hide sidebar on mobile to focus on chat */
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-page-container">
+    <!-- Sidebar / Suggestions Panel -->
+    <div class="chat-sidebar">
+        <div>
+            <h3 class="sidebar-title">Vahad Assistant</h3>
+            <p style="font-size: 0.85rem; color: #718096; line-height: 1.4;">
+                Powered by LangGraph, this intelligent agent can search destinations, find categories, and answer travel queries.
+            </p>
+        </div>
+
+        <div class="sidebar-section">
+            <h4>Quick Queries</h4>
+            <div class="suggestion-chips">
+                <button class="suggestion-btn" onclick="sendSuggestion('Recommend 3 beach destinations')">
+                    🌴 <span>Recommend beaches</span>
+                </button>
+                <button class="suggestion-btn" onclick="sendSuggestion('What are the featured tourist spots?')">
+                    ⭐ <span>Featured spots</span>
+                </button>
+                <button class="suggestion-btn" onclick="sendSuggestion('Show me budget friendly options')">
+                    💰 <span>Budget friendly places</span>
+                </button>
+                <button class="suggestion-btn" onclick="sendSuggestion('Give me details about Kerala')">
+                    🗺️ <span>Details about Kerala</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section" style="margin-top: auto;">
+            <h4>Configuration</h4>
+            <div style="font-size: 0.8rem; background: #fffdf5; border: 1px solid #ffeeba; border-radius: 12px; padding: 12px; color: #856404; line-height: 1.4;">
+                ℹ️ To switch models or customize keys, edit the <strong>.env</strong> file at the root.
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Box -->
+    <div class="chat-box-container">
+        <!-- Header -->
+        <div class="chat-box-header">
+            <div class="bot-profile">
+                <div class="bot-avatar">🤖</div>
+                <div class="bot-info">
+                    <span class="bot-name">VAHAD Travel Agent</span>
+                    <span class="bot-status">
+                        <span class="pulse-dot"></span>
+                        Active (LangGraph)
+                    </span>
+                </div>
+            </div>
+            <button class="btn-clear" onclick="clearChat()">
+                🗑️ Clear History
+            </button>
+        </div>
+
+        <!-- Messages list -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome message -->
+            <div class="message-wrapper bot">
+                <div class="message-bubble">
+                    <p>Namaste! 🙏 Welcome to Vahad Travel Assistant.</p>
+                    <p>I am your dedicated AI guide. You can ask me to search for tourist spots, filter by categories, check price estimates, or get detail recommendations from our database.</p>
+                    <p>What kind of trip are you planning today?</p>
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+
+        <!-- Input Box -->
+        <div class="chat-input-area">
+            <form class="chat-input-form" id="chatForm" onsubmit="handleChatSubmit(event)">
+                <input type="text" id="userInput" class="chat-input" placeholder="Ask about places to visit, budgets, activities..." autocomplete="off" required>
+                <button type="submit" class="btn-send">
+                    ✈️
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Thread/Session ID persistence
+    if (!localStorage.getItem('vahad_chat_session_id')) {
+        localStorage.setItem('vahad_chat_session_id', 'session_' + Math.random().toString(36).substring(2, 15));
+    }
+    const sessionId = localStorage.getItem('vahad_chat_session_id');
+
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+
+    // Helper to format text with simple markdown (bold, lists, linebreaks)
+    function formatMarkdown(text) {
+        // Safe escape HTML characters
+        let escaped = text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        // Convert bold markdown **text** to <strong>text</strong>
+        escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Convert inline code `code` to <code>code</code>
+        escaped = escaped.replace(/`(.*?)`/g, '<code>$1</code>');
+
+        // Parse lists (lines starting with - or *)
+        let lines = escaped.split('\n');
+        let inList = false;
+        let formattedLines = [];
+
+        for (let line of lines) {
+            let listMatch = line.match(/^(\s*)[-\*]\s+(.*)/);
+            if (listMatch) {
+                if (!inList) {
+                    formattedLines.push('<ul>');
+                    inList = true;
+                }
+                formattedLines.push('<li>' + listMatch[2] + '</li>');
+            } else {
+                if (inList) {
+                    formattedLines.push('</ul>');
+                    inList = false;
+                }
+                formattedLines.push(line);
+            }
+        }
+        if (inList) {
+            formattedLines.push('</ul>');
+        }
+
+        return formattedLines.join('\n').replace(/\n/g, '<br>');
+    }
+
+    // Append a message to the chat container
+    function appendMessage(sender, text) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `message-wrapper ${sender}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        
+        if (sender === 'bot') {
+            bubble.innerHTML = formatMarkdown(text);
+        } else {
+            bubble.textContent = text;
+        }
+
+        const time = document.createElement('div');
+        time.className = 'message-time';
+        
+        const now = new Date();
+        time.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        wrapper.appendChild(bubble);
+        wrapper.appendChild(time);
+        chatMessages.appendChild(wrapper);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message-wrapper bot';
+        wrapper.id = 'typingIndicator';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'typing-indicator';
+        indicator.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+        
+        bubble.appendChild(indicator);
+        wrapper.appendChild(bubble);
+        chatMessages.appendChild(wrapper);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+
+    // Handle form submit
+    function handleChatSubmit(event) {
+        if (event) event.preventDefault();
+        
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        // Append user message
+        appendMessage('user', message);
+        userInput.value = '';
+
+        // Show loading state
+        showTypingIndicator();
+
+        // Send AJAX request to Django views
+        fetch('{% url "chat_message" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                message: message,
+                session_id: sessionId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            removeTypingIndicator();
+            if (data.success) {
+                appendMessage('bot', data.response);
+            } else {
+                appendMessage('bot', '⚠️ Sorry, I encountered an error. Please try again. Details: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            removeTypingIndicator();
+            appendMessage('bot', '⚠️ Connection error. Please make sure the server is running and try again.');
+            console.error('Chat error:', err);
+        });
+    }
+
+    // Send suggestions instantly
+    function sendSuggestion(text) {
+        userInput.value = text;
+        handleChatSubmit();
+    }
+
+    // Clear history function
+    function clearChat() {
+        if (confirm("Are you sure you want to clear your conversation history?")) {
+            // Re-generate a fresh session ID to start clean in LangGraph memory
+            localStorage.setItem('vahad_chat_session_id', 'session_' + Math.random().toString(36).substring(2, 15));
+            window.location.reload();
+        }
+    }
+</script>
+{% endblock %}

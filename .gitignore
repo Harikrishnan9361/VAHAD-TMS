@@ -1,0 +1,24 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environment secrets
+.env
+
+# Agent and IDE workspace configurations
+.agents/
+.gemini/
+.vscode/
+.idea/
+
+# OS metadata
+.DS_Store
+Thumbs.db

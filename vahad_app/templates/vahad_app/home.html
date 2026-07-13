@@ -420,16 +420,39 @@
 <section class="hero-section">
     <div class="hero-content">
         <div
-            style="font-size: 1.2rem; font-weight: 700; color: #FF512F; letter-spacing: 3px; margin-bottom: 10px; text-transform: uppercase;">
-            Discover Incredible India</div>
+            style="font-size: 1.2rem; font-weight: 800; color: #FF512F; letter-spacing: 3px; margin-bottom: 15px; text-transform: uppercase; background: rgba(255, 81, 47, 0.1); display: inline-block; padding: 8px 20px; border-radius: 50px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 81, 47, 0.2);">
+            ✨ Welcome to the New VAHAD Experience ✨</div>
         <h1 class="hero-title">Experience <br> The Extraordinary</h1>
-        <p class="hero-subtitle">Curated journeys, exclusive stays, and memories that last a lifetime.</p>
+        <p class="hero-subtitle">Curated journeys, exclusive stays, and memories that last a lifetime across India.</p>
         <a href="{% url 'destinations' %}" class="btn-hero">Start Exploration</a>
     </div>
 </section>
 
+<!-- Explore by Category -->
+<section class="offers-section">
+    <h2 class="section-title">Explore by Category ✈️</h2>
+    <div class="offers-container">
+        {% for category in categories %}
+        <div class="offer-card">
+            <div class="cat-img-wrapper">
+                {% if category.image %}
+                <img src="{{ category.image.url }}" alt="{{ category.name }}" class="cat-img">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="{{ category.name }}" class="cat-img">
+                {% endif %}
+            </div>
+            <div class="cat-content">
+                <div class="cat-title">{{ category.name }}</div>
+                <p class="cat-desc">{{ category.description|truncatewords:12 }}</p>
+                <a href="{% url 'destinations' %}?category={{ category.id }}" style="text-decoration: none; color: #FF512F; font-weight: 700; font-size: 0.9rem; display: inline-block; transition: 0.2s;">View Destinations ➔</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 <!-- Featured Destinations (TRENDING THIS WEEK) -->
-<section class="destinations-section">
+<section class="destinations-section" style="background-color: var(--vibrant-bg);">
     <h2 class="section-title">Trending This Week 🔥</h2>
     <div class="places-grid">
         {% for destination in featured_destinations %}
@@ -439,17 +462,38 @@
                 {% if destination.image %}
                 <img src="{{ destination.image.url }}" alt="{{ destination.name }}">
                 {% else %}
-                <img src="https://source.unsplash.com/600x800/?india,landmark" alt="Placeholder">
+                <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Placeholder">
                 {% endif %}
             </div>
 
             <div class="place-info">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 0.8rem; font-weight: 700; color: #FF512F; text-transform: uppercase; letter-spacing: 0.5px;">{{ destination.category.name }}</span>
+                    <span style="font-size: 0.85rem; font-weight: 600; color: #f39c12;">★ {% if destination.is_featured %}4.9{% else %}4.6{% endif %}</span>
+                </div>
                 <div class="place-title">{{ destination.name }}</div>
                 <div class="place-location">📍 {{ destination.location }}</div>
+                <div class="place-details-mini" style="font-size: 0.85rem; color: #777; margin-bottom: 15px; display: flex; gap: 15px;">
+                    <span>⏱️ {% if "Beach" in destination.name or "Goa" in destination.name %}3-4 Days{% elif "Munnar" in destination.name or "Ooty" in destination.name %}2-3 Days{% else %}4-5 Days{% endif %}</span>
+                    <span>🌤️ {{ destination.best_time_to_visit|default:"Sept - March" }}</span>
+                </div>
                 <a href="{% url 'booking' destination.id %}" class="btn-book-card">Book Adventure ➔</a>
             </div>
         </div>
         {% endfor %}
+    </div>
+</section>
+
+<!-- Premium Promo Section -->
+<section class="premium-promo-section">
+    <div class="premium-promo-box">
+        <span class="floating-gem gem-1">💎</span>
+        <span class="floating-gem gem-2">✨</span>
+        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 20px;">Join VAHAD Premium Elite</h2>
+        <p style="font-size: 1.2rem; font-weight: 300; max-width: 700px; margin: 0 auto 30px; line-height: 1.6;">
+            Unlock custom priority booking, lower destination price estimates, loyalty cashback rewards, and luxury transport options.
+        </p>
+        <a href="{% url 'premium' %}" class="btn-premium-cta">Explore Elite Benefits</a>
     </div>
 </section>
 {% endblock %}

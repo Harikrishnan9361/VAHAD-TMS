@@ -9,7 +9,7 @@ from datetime import datetime
 
 def home(request):
     categories = Category.objects.all()[:10]
-    featured_destinations = Destination.objects.filter(is_featured=True)[:5]
+    featured_destinations = Destination.objects.filter(is_featured=True)[:8]
     return render(request, 'vahad_app/home.html', {
         'categories': categories,
         'featured_destinations': featured_destinations
@@ -33,11 +33,15 @@ def about(request):
 def destinations(request):
     category_id = request.GET.get('category')
     query = request.GET.get('q')
+    location = request.GET.get('location')
     
     all_destinations = Destination.objects.all()
     
     if category_id:
         all_destinations = all_destinations.filter(category_id=category_id)
+        
+    if location:
+        all_destinations = all_destinations.filter(location__icontains=location)
     
     if query:
         from django.db.models import Q
@@ -50,7 +54,8 @@ def destinations(request):
         'destinations': all_destinations,
         'categories': categories,
         'current_category': int(category_id) if category_id else None,
-        'search_query': query
+        'search_query': query,
+        'current_location': location
     })
 
 def destination_detail(request, pk):
@@ -110,8 +115,12 @@ def payment(request, booking_id):
 def confirmation(request, booking_id):
     booking_obj = get_object_or_404(Booking, booking_id=booking_id)
     # Mark as paid for simulation
-    booking_obj.is_paid = True
-    booking_obj.save()
+    if not booking_obj.is_paid:
+        if request.GET.get('pro') == 'true':
+            from decimal import Decimal
+            booking_obj.total_price += Decimal('2999.00')
+        booking_obj.is_paid = True
+        booking_obj.save()
     return render(request, 'vahad_app/confirmation.html', {'booking': booking_obj})
 
 @login_required
@@ -123,20 +132,6 @@ def profile(request):
 
 def premium(request):
     return render(request, 'vahad_app/premium.html')
-def checkout(request, booking_id):
-    booking = Booking.objects.get(id=booking_id)
-
-    if request.method == "POST":
-        method = request.POST.get("payment_method")
-        is_pro = request.POST.get("is_pro") == "true"
-
-        if is_pro:
-            booking.total_price += 2999
-
-        booking.payment_method = method
-        booking.save()
-
-        return redirect('confirmation', booking_id=booking.booking_id)
 
 @login_required
 def rewards(request):
@@ -187,3 +182,29 @@ def cancel_booking(request, booking_id):
     booking.delete()
     messages.success(request, "Booking cancelled successfully.")
     return redirect('profile')
+
+
+from django.http import JsonResponse
+import json
+from .assistant import ask_agent
+
+def chat(request):
+    return render(request, 'vahad_app/chat.html')
+
+def chat_message(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_message = data.get('message', '').strip()
+            session_id = data.get('session_id', 'default_session')
+            
+            if not user_message:
+                return JsonResponse({'success': False, 'error': 'Empty message'})
+            
+            # Run the compiled LangGraph agent
+            response_text = ask_agent(session_id, user_message)
+            return JsonResponse({'success': True, 'response': response_text})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+            
+    return JsonResponse({'success': False, 'error': 'Only POST method is allowed'})

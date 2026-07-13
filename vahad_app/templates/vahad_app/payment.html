@@ -530,6 +530,8 @@
     const basePrice = parseFloat("{{ booking.total_price }}");
     const priceDisplay = document.getElementById('displayPrice');
     const toggleBtn = document.getElementById('proToggle');
+    const payLink = document.querySelector('.btn-pay-master');
+    const confirmationBaseUrl = payLink.href;
 
     // Initial formatter (handles the template text 0 padding hack)
     priceDisplay.innerText = '₹' + basePrice.toFixed(2);
@@ -541,6 +543,9 @@
         let finalPrice = basePrice;
         if (isPro) {
             finalPrice += 2999;
+            payLink.href = confirmationBaseUrl + '?pro=true';
+        } else {
+            payLink.href = confirmationBaseUrl;
         }
 
         // Animate Price Change

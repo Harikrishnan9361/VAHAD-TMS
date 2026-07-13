@@ -43,13 +43,13 @@
             <!-- Location Dropdown -->
             <div class="nav-location">
                 <span style="font-size: 0.9rem; color: #555;">📍</span>
-                <select class="location-select"
-                    style="border: none; outline: none; background: transparent; cursor: pointer;">
-                    <option>Mumbai</option>
-                    <option>Delhi</option>
-                    <option>Bangalore</option>
-                    <option>Chennai</option>
-                    <option>Kolkata</option>
+                <select class="location-select" id="locationSelect"
+                    style="border: none; outline: none; background: transparent; cursor: pointer;"
+                    onchange="filterByLocation(this.value)">
+                    <option value="">All Locations</option>
+                    {% for loc in all_locations %}
+                    <option value="{{ loc }}" {% if current_location == loc %}selected{% endif %}>{{ loc }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -63,6 +63,9 @@
                 </li>
                 <li><a href="{% url 'about' %}"
                         class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+                </li>
+                <li><a href="{% url 'chat' %}"
+                        class="nav-item {% if request.resolver_match.url_name == 'chat' %}active{% endif %}">AI Assistant</a>
                 </li>
 
                 {% if user.is_authenticated %}
@@ -85,8 +88,8 @@
                     <!-- Dropdown Menu -> Shows on Hover -->
                     <div id="profileDropdown" class="profile-dropdown-menu">
                         <div style="padding: 15px 20px; background: #f9f9f9; border-bottom: 1px solid #eee;">
-                            <strong style="display: block; font-size: 0.85rem; color: #05e21b;">VAHAD</strong>
-                            <span style="font-size: 0.75rem; color: #777;">vahad@gmail.com</span>
+                            <strong style="display: block; font-size: 0.85rem; color: #05e21b;">{{ user.username }}</strong>
+                            <span style="font-size: 0.75rem; color: #777;">{{ user.email }}</span>
                         </div>
                         <a href="{% url 'profile' %}"
                             style="display: block; padding: 12px 20px; color: #555; text-decoration: none; border-bottom: 1px solid #f9f9f9; transition: background 0.2s; font-size: 0.9rem;">🎫
@@ -103,12 +106,9 @@
                     </div>
                 </li>
                 {% else %}
-                <li id="authLinks">
-                    <a href="{% url 'login' %}"
-                        style="padding: 8px 20px; text-decoration: none; color: #007bff; border: 1px solid #007bff; border-radius: 20px; margin-right: 10px;">Login</a>
-                    <a href="{% url 'register' %}"
-                        style="padding: 8px 20px; text-decoration: none; color: #fff; background: #007bff; border-radius: 20px;">Sign
-                        Up</a>
+                <li id="authLinks" style="display: flex; gap: 10px; align-items: center; white-space: nowrap;">
+                    <a href="{% url 'login' %}" class="btn-login-nav">Login</a>
+                    <a href="{% url 'register' %}" class="btn-signup-nav">Sign Up</a>
                 </li>
                 {% endif %}
             </ul>
@@ -216,7 +216,68 @@
             box-shadow: 0 4px 15px rgba(221, 36, 118, 0.3);
             border-color: transparent;
         }
+
+        /* Navbar Auth Buttons */
+        .btn-login-nav {
+            padding: 8px 22px;
+            text-decoration: none;
+            color: #FF512F;
+            border: 2px solid #FF512F;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: transparent;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-login-nav:hover {
+            background: rgba(255, 81, 47, 0.05);
+            color: #DD2476;
+            border-color: #DD2476;
+            transform: translateY(-2px);
+        }
+
+        .btn-signup-nav {
+            padding: 8px 22px;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(221, 36, 118, 0.2);
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-signup-nav:hover {
+            opacity: 0.95;
+            box-shadow: 0 6px 15px rgba(221, 36, 118, 0.4);
+            transform: translateY(-2px);
+            color: #fff;
+        }
     </style>
+    <script>
+        function filterByLocation(loc) {
+            let destinationsUrl = "{% url 'destinations' %}";
+            const url = new URL(window.location.href);
+            
+            // If we are already on the destinations page, we preserve query and category
+            if (url.pathname.includes('/destinations/')) {
+                if (loc) {
+                    url.searchParams.set('location', loc);
+                } else {
+                    url.searchParams.delete('location');
+                }
+                window.location.href = url.toString();
+            } else {
+                // If on another page, go to destinations with the location
+                window.location.href = destinationsUrl + "?location=" + encodeURIComponent(loc);
+            }
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 

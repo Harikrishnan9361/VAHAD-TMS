@@ -11,6 +11,19 @@
         <h2>Welcome Back</h2>
         <p style="color: #777; margin-bottom: 25px;">Login to manage your bookings</p>
 
+        {% if form.errors or form.non_field_errors %}
+        <div style="color: #d32f2f; background: #ffebee; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: left; font-size: 0.9rem;">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p style="margin: 4px 0;">• {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p style="margin: 4px 0;">• {{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <form method="POST">
             {% csrf_token %}
             <div class="form-group">

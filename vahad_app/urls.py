@@ -18,4 +18,6 @@ urlpatterns = [
     path('rewards/', views.rewards, name='rewards'),
     path('booking/cancel/<str:booking_id>/', views.cancel_booking, name='cancel_booking'),
     path('premium/', views.premium, name='premium'),
+    path('chat/', views.chat, name='chat'),
+    path('chat/message/', views.chat_message, name='chat_message'),
 ]

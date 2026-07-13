@@ -6,6 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'VAHAD-TMS'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vahad_project.settings')
     try:
         from django.core.management import execute_from_command_line

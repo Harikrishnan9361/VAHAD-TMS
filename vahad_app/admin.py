@@ -20,3 +20,4 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = ['booking_id', 'user', 'destination', 'travel_date', 'total_price', 'is_paid']
     list_filter = ['is_paid', 'hotel_type', 'transport']
     search_fields = ['booking_id', 'user__username', 'destination__name']
+
