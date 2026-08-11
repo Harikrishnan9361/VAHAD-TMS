@@ -180,6 +180,11 @@
             animation: fadeIn 0.2s ease-out;
         }
 
+        .profile-dropdown-menu.show {
+            display: block !important;
+            animation: fadeIn 0.2s ease-out;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -277,6 +282,27 @@
                 window.location.href = destinationsUrl + "?location=" + encodeURIComponent(loc);
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarLink = document.querySelector('.nav-avatar-link');
+            const dropdown = document.querySelector('.profile-dropdown-menu');
+            
+            if (avatarLink && dropdown) {
+                avatarLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                });
+                
+                document.addEventListener('click', function() {
+                    dropdown.classList.remove('show');
+                });
+                
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>

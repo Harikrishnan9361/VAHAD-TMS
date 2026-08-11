@@ -126,8 +126,10 @@ def confirmation(request, booking_id):
 @login_required
 def profile(request):
     bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
+    points = bookings.count() * 150
     return render(request, 'vahad_app/profile.html', {
-        'bookings': bookings
+        'bookings': bookings,
+        'points': points
     })
 
 def premium(request):
@@ -138,15 +140,31 @@ def rewards(request):
     bookings_count = Booking.objects.filter(user=request.user).count()
     # Simple gamification logic
     points = bookings_count * 150
-    level = "Explorer"
-    if points > 1000: level = "Voyager"
-    if points > 3000: level = "Globe Trotter"
-    if points > 5000: level = "Vahad Legend"
+    
+    # Determine level, next tier, and percentage progress
+    if points <= 1000:
+        level = "Explorer"
+        next_tier = "1,000"
+        points_pct = min(100, int((points / 1000) * 100))
+    elif points <= 3000:
+        level = "Voyager"
+        next_tier = "3,000"
+        points_pct = min(100, int(((points - 1000) / 2000) * 100))
+    elif points <= 5000:
+        level = "Globe Trotter"
+        next_tier = "5,000"
+        points_pct = min(100, int(((points - 3000) / 2000) * 100))
+    else:
+        level = "Vahad Legend"
+        next_tier = "Max"
+        points_pct = 100
     
     return render(request, 'vahad_app/rewards.html', {
         'points': points,
         'level': level,
-        'bookings_count': bookings_count
+        'bookings_count': bookings_count,
+        'next_tier': next_tier,
+        'points_pct': points_pct
     })
 
 
