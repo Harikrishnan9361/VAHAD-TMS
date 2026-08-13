@@ -352,21 +352,23 @@
                             <td>{{ booking.travel_date|date:"d M Y" }}</td>
                             <td>{{ booking.num_travelers }} Person(s)</td>
                             <td>
-                                {% if booking.is_paid %}
-                                <span class="status-pill" style="background: #e8f5e9; color: #2e7d32;">✅
-                                    Confirmed</span>
+                                {% if booking.booking_status == 'Cancelled' %}
+                                <span class="status-pill" style="background: #ffebee; color: #c62828; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">❌ Cancelled</span>
+                                {% elif booking.is_paid %}
+                                <span class="status-pill" style="background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">✅ Confirmed</span>
                                 {% else %}
-                                <span class="status-pill" style="background: #fff3e0; color: #ef6c00;">⏳ Payment
-                                    Pending</span>
+                                <span class="status-pill" style="background: #fff3e0; color: #ef6c00; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">⏳ Payment Pending</span>
                                 {% endif %}
                             </td>
                             <td>
                                 <div style="display: flex;">
                                     <a href="{% url 'confirmation' booking.booking_id %}" class="btn-action-sm btn-view"
                                         title="View Ticket">👁️</a>
+                                    {% if booking.booking_status != 'Cancelled' %}
                                     <a href="{% url 'cancel_booking' booking.booking_id %}"
                                         onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')"
-                                        class="btn-action-sm btn-cancel" title="Remove Ticket">🗑️</a>
+                                        class="btn-action-sm btn-cancel" title="Cancel Booking">🗑️</a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>

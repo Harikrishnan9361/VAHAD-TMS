@@ -165,23 +165,35 @@
             {% csrf_token %}
 
             <!-- Full Name (Readonly or Editable) -->
-            <div class="form-group">
-                <label class="form-label">Full Name</label>
-                <input type="text" class="form-input" value="{{ request.user.first_name }} {{ request.user.last_name }}"
-                    placeholder="Your Full Name">
+            <div class="row-2">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="customer_name" class="form-input" value="{{ request.user.first_name }} {{ request.user.last_name }}"
+                        placeholder="Your Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-input" value="{{ request.user.email }}"
+                        placeholder="Your Email" required>
+                </div>
             </div>
 
             <!-- Date & Travelers -->
             <div class="row-2">
                 <div class="form-group">
-                    <label class="form-label">Travel Date</label>
+                    <label class="form-label">Check-in Date</label>
                     <input type="date" name="travel_date" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Members (Travelers)</label>
-                    <input type="number" name="num_travelers" id="numTravelers" class="form-input" value="1" min="1"
-                        max="20" required>
+                    <label class="form-label">Check-out Date (Optional)</label>
+                    <input type="date" name="check_out_date" class="form-input">
                 </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 25px;">
+                <label class="form-label">Members (Travelers)</label>
+                <input type="number" name="num_travelers" id="numTravelers" class="form-input" value="1" min="1"
+                    max="20" required>
             </div>
 
             <!-- Hotel & Transport -->
@@ -207,20 +219,20 @@
             <!-- Special Requests (ADD MORE YOU) -->
             <div class="form-group">
                 <label class="form-label">Special Requests (Optional)</label>
-                <textarea class="form-input" rows="3"
+                <textarea name="special_requests" class="form-input" rows="3"
                     placeholder="Any specific requirements? e.g. Wheelchair access, Veg meal..."></textarea>
             </div>
 
             <!-- Contact & Address -->
             <div class="form-group">
                 <label class="form-label">Contact Number</label>
-                <input type="tel" class="form-input" placeholder="+91 98765 43210"
-                    value="{{ request.user.userprofile.phone }}">
+                <input type="tel" name="phone" class="form-input" placeholder="+91 98765 43210"
+                    value="{{ request.user.userprofile.phone }}" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Address (Optional)</label>
-                <input type="text" class="form-input" placeholder="House No, Street, City">
+                <input type="text" name="address" class="form-input" placeholder="House No, Street, City">
             </div>
 
             <button type="submit" class="btn-pay">Proceed to Pay ➔</button>

@@ -64,9 +64,7 @@
                 <li><a href="{% url 'about' %}"
                         class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
                 </li>
-                <li><a href="{% url 'chat' %}"
-                        class="nav-item {% if request.resolver_match.url_name == 'chat' %}active{% endif %}">AI Assistant</a>
-                </li>
+
 
                 {% if user.is_authenticated %}
                 <li id="profileSection"

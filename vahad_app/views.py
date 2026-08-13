@@ -68,22 +68,48 @@ def booking(request, destination_id):
     if request.method == 'POST':
         booking_id = str(uuid.uuid4())[:8].upper()
         
+        # New Fields
+        customer_name = request.POST.get('customer_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address', '')
+        special_requests = request.POST.get('special_requests', '')
+        
+        if not customer_name or not email or not phone:
+            messages.error(request, "Please fill in all required contact details.")
+            return render(request, 'vahad_app/booking.html', {'destination': destination})
+        
         travel_date_str = request.POST.get('travel_date')
+        check_out_date_str = request.POST.get('check_out_date')
+        
         if not travel_date_str:
-             messages.error(request, "Please select a travel date.")
+             messages.error(request, "Please select a check-in date.")
              return render(request, 'vahad_app/booking.html', {'destination': destination})
 
         try:
             travel_date = datetime.strptime(travel_date_str, '%Y-%m-%d').date()
+            check_out_date = None
+            if check_out_date_str:
+                check_out_date = datetime.strptime(check_out_date_str, '%Y-%m-%d').date()
+                if check_out_date <= travel_date:
+                    messages.error(request, "Check-out date must be after check-in date.")
+                    return render(request, 'vahad_app/booking.html', {'destination': destination})
         except ValueError:
             messages.error(request, "Invalid date format.")
             return render(request, 'vahad_app/booking.html', {'destination': destination})
             
-        num_travelers = int(request.POST.get('num_travelers', 1))
+        try:
+            num_travelers = int(request.POST.get('num_travelers', 1))
+            if num_travelers <= 0:
+                raise ValueError
+        except ValueError:
+            messages.error(request, "Invalid number of travelers.")
+            return render(request, 'vahad_app/booking.html', {'destination': destination})
+            
         hotel_type = request.POST.get('hotel_type')
         transport = request.POST.get('transport')
         
-        # Simple price calculation logic to match frontend
+        # Accurate Backend Price Calculation
         multiplier = 1.0
         if hotel_type == 'Budget': multiplier = 0.8
         elif hotel_type == 'Luxury': multiplier = 2.5
@@ -93,13 +119,20 @@ def booking(request, destination_id):
         Booking.objects.create(
             user=request.user,
             destination=destination,
+            customer_name=customer_name,
+            email=email,
+            phone=phone,
+            address=address,
+            special_requests=special_requests,
             travel_date=travel_date,
+            check_out_date=check_out_date,
             num_travelers=num_travelers,
             hotel_type=hotel_type,
             transport=transport,
             total_price=total_price,
             booking_id=booking_id,
-            is_paid=False
+            is_paid=False,
+            booking_status="Pending"
         )
         return redirect('payment', booking_id=booking_id)
     return render(request, 'vahad_app/booking.html', {'destination': destination})
@@ -197,32 +230,9 @@ def edit_profile(request):
 @login_required
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, booking_id=booking_id, user=request.user)
-    booking.delete()
+    booking.booking_status = "Cancelled"
+    booking.save()
     messages.success(request, "Booking cancelled successfully.")
     return redirect('profile')
 
 
-from django.http import JsonResponse
-import json
-from .assistant import ask_agent
-
-def chat(request):
-    return render(request, 'vahad_app/chat.html')
-
-def chat_message(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            user_message = data.get('message', '').strip()
-            session_id = data.get('session_id', 'default_session')
-            
-            if not user_message:
-                return JsonResponse({'success': False, 'error': 'Empty message'})
-            
-            # Run the compiled LangGraph agent
-            response_text = ask_agent(session_id, user_message)
-            return JsonResponse({'success': True, 'response': response_text})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-            
-    return JsonResponse({'success': False, 'error': 'Only POST method is allowed'})

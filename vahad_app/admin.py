@@ -17,7 +17,7 @@ class DestinationAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ['booking_id', 'user', 'destination', 'travel_date', 'total_price', 'is_paid']
-    list_filter = ['is_paid', 'hotel_type', 'transport']
-    search_fields = ['booking_id', 'user__username', 'destination__name']
+    list_display = ['booking_id', 'customer_name', 'destination', 'travel_date', 'total_price', 'payment_method', 'booking_status', 'created_at']
+    list_filter = ['booking_status', 'payment_method', 'travel_date', 'is_paid', 'hotel_type', 'transport']
+    search_fields = ['customer_name', 'email', 'booking_id', 'phone']
 
