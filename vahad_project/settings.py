@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'vahad_project.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "vahad",
+        "NAME": "VahadTMS",
         "USER": "root",
         "PASSWORD": "Hari@9361",
         "HOST": "127.0.0.1",
