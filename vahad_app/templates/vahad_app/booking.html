@@ -8,74 +8,128 @@
     :root {
         --paper-bg: #fff;
         --gold-accents: #D4AF37;
+        --gold-soft: #fef3c7;
         --navy-dark: #0f172a;
+        --navy-mid: #1e293b;
         --soft-gray: #f8fafc;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --shadow-soft: 0 20px 45px rgba(15, 23, 42, 0.1);
     }
 
     body {
-        background-color: var(--soft-gray);
+        background: linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+        color: var(--navy-dark);
     }
 
     .booking-container {
-        max-width: 1100px;
+        max-width: 1160px;
         margin: 50px auto 100px;
         display: grid;
         grid-template-columns: 1.5fr 1fr;
-        gap: 40px;
+        gap: 36px;
         padding: 0 20px;
     }
 
     .booking-form-card {
-        background: #fff;
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 28px;
+        padding: 38px 34px;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .booking-form-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.18), transparent 70%);
+        pointer-events: none;
     }
 
     .booking-summary-card {
-        background: var(--navy-dark);
+        background: linear-gradient(160deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
         color: #fff;
-        border-radius: 20px;
-        padding: 30px;
+        border-radius: 28px;
+        padding: 28px 24px 22px;
         position: sticky;
         top: 100px;
         height: fit-content;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 20px 35px rgba(15, 23, 42, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     h1 {
-        font-size: 2rem;
+        font-size: clamp(1.9rem, 3vw, 2.5rem);
         color: var(--navy-dark);
-        margin-bottom: 30px;
+        margin: 0 0 20px;
+        letter-spacing: -0.04em;
+    }
+
+    .section-subtitle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-bottom: 28px;
+    }
+
+    .section-subtitle::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gold-accents);
+        box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.15);
     }
 
     .form-group {
-        margin-bottom: 25px;
+        margin-bottom: 24px;
     }
 
     .form-label {
         display: block;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: 10px;
-        color: #475569;
+        color: #334155;
+        font-size: 0.95rem;
     }
 
     .form-input,
     .form-select {
         width: 100%;
-        padding: 15px;
-        border: 1px solid #cbd5e1;
-        border-radius: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 14px;
         font-size: 1rem;
-        transition: 0.2s;
+        transition: all 0.2s ease;
         font-family: inherit;
+        color: var(--navy-dark);
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.02);
+    }
+
+    .form-input:hover,
+    .form-select:hover {
+        border-color: #cbd5e1;
     }
 
     .form-input:focus,
     .form-select:focus {
         outline: none;
-        border-color: var(--navy-dark);
-        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+        border-color: rgba(15, 23, 42, 0.38);
+        box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.08);
+        background: #fff;
+    }
+
+    textarea.form-input {
+        min-height: 110px;
+        resize: vertical;
     }
 
     .row-2 {
@@ -84,68 +138,147 @@
         gap: 20px;
     }
 
-    /* Destination Header in Summary */
+    .guest-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+        border: 1px solid #dfe7ff;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        color: #334155;
+        margin-bottom: 26px;
+        font-weight: 600;
+    }
+
+    .guest-badge strong {
+        color: var(--navy-dark);
+    }
+
     .summary-header {
         display: flex;
-        gap: 15px;
-        margin-bottom: 30px;
+        gap: 14px;
+        margin-bottom: 28px;
         padding-bottom: 20px;
-        border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.22);
     }
 
     .dest-thumb {
-        width: 80px;
-        height: 80px;
-        border-radius: 12px;
+        width: 82px;
+        height: 82px;
+        border-radius: 16px;
         object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .summary-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+
+    .summary-header div {
+        font-size: 0.9rem;
+        opacity: 0.85;
+        margin-top: 4px;
+    }
+
+    .booking-summary-card h4 {
+        margin: 0 0 20px;
+        color: var(--gold-soft);
+        font-size: 1.05rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
     }
 
     .price-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 15px;
-        opacity: 0.9;
+        margin-bottom: 14px;
+        font-size: 0.96rem;
+        color: rgba(255, 255, 255, 0.85);
+        gap: 18px;
+    }
+
+    .price-row span:last-child {
+        font-weight: 700;
     }
 
     .total-row {
         margin-top: 30px;
         padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 1.2rem;
-        font-weight: 700;
+        font-weight: 800;
         color: var(--gold-accents);
     }
 
+    .travel-note {
+        margin-top: 26px;
+        padding: 14px 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.8rem;
+        line-height: 1.5;
+        text-align: center;
+    }
+
     .btn-pay {
-        background: var(--gold-accents);
+        background: linear-gradient(135deg, #facc15 0%, #d4af37 100%);
         color: var(--navy-dark);
         width: 100%;
-        padding: 18px;
-        border-radius: 12px;
+        padding: 18px 20px;
+        border-radius: 14px;
         border: none;
-        font-size: 1.1rem;
+        font-size: 1.08rem;
         font-weight: 800;
         margin-top: 30px;
         cursor: pointer;
-        transition: 0.3s;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        box-shadow: 0 12px 20px rgba(212, 175, 55, 0.24);
     }
 
     .btn-pay:hover {
         transform: translateY(-2px);
-        filter: brightness(110%);
+        filter: brightness(1.05);
+        box-shadow: 0 16px 24px rgba(212, 175, 55, 0.28);
     }
 
-    .guest-badge {
-        background: #f1f5f9;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        color: #475569;
-        margin-bottom: 20px;
-        display: inline-block;
+    .btn-pay:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+        .booking-container {
+            grid-template-columns: 1fr;
+            margin-top: 24px;
+        }
+
+        .booking-summary-card {
+            position: static;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .booking-form-card {
+            padding: 24px 18px;
+        }
+
+        .row-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .guest-badge {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 {% endblock %}
@@ -156,6 +289,7 @@
     <!-- LEFT: FORM -->
     <div class="booking-form-card">
         <h1>Details Required</h1>
+        <div class="section-subtitle">Secure your personalized travel plan</div>
 
         <div class="guest-badge">
             👤 Logged in as: <strong>{{ request.user.username }}</strong>
@@ -273,7 +407,7 @@
             <span id="estimatedTotal">₹{{ destination.price_estimate }}</span>
         </div>
 
-        <div style="margin-top: 30px; font-size: 0.85rem; opacity: 0.7; text-align: center;">
+        <div class="travel-note">
             *Final tax calculation will be added at payment.
         </div>
     </div>
