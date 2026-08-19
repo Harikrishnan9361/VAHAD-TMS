@@ -2,7 +2,43 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/destination.css' %}">
+<link rel="stylesheet" href="{% static 'css/destination.css' %}?v=2.0">
+<style>
+    /* Direct High-Priority Header Nature Styles */
+    .page-header {
+        position: relative !important;
+        background: linear-gradient(135deg, rgba(6, 44, 25, 0.65) 0%, rgba(10, 25, 18, 0.75) 100%), 
+                    url('https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=2000&q=85') no-repeat center center !important;
+        background-size: cover !important;
+        background-position: center 45% !important;
+        padding: 140px 20px 100px !important;
+        text-align: center !important;
+        color: #ffffff !important;
+        margin-bottom: 20px !important;
+    }
+
+    .page-header h1 {
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 3.6rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 12px !important;
+        letter-spacing: -0.5px !important;
+        color: #00e676 !important;
+        -webkit-text-fill-color: #00e676 !important;
+        background: none !important;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 230, 118, 0.3) !important;
+        animation: fadeInDown 0.8s ease-out !important;
+    }
+
+    .page-header p {
+        font-size: 1.25rem !important;
+        font-weight: 400 !important;
+        color: #f1f5f9 !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+    }
+</style>
 {% endblock %}
 
 {% block title %}Explore Destinations - VAHAD{% endblock %}

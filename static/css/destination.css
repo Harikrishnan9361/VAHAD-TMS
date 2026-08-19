@@ -10,10 +10,10 @@
 /* Page Header with Lush Nature Image & Dark Emerald Overlay */
 .page-header {
     position: relative;
-    background: linear-gradient(135deg, rgba(6, 78, 59, 0.75) 0%, rgba(15, 23, 42, 0.7) 100%), 
-                url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=85') no-repeat center center;
+    background: linear-gradient(135deg, rgba(6, 44, 25, 0.65) 0%, rgba(10, 25, 18, 0.75) 100%), 
+                url('https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=2000&q=85') no-repeat center center;
     background-size: cover;
-    background-position: center;
+    background-position: center 45%;
     padding: 140px 20px 100px;
     text-align: center;
     color: white;
@@ -26,23 +26,21 @@
     font-weight: 800;
     margin-bottom: 12px;
     letter-spacing: -0.5px;
-    color: #10b981;
-    background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #00e676;
+    -webkit-text-fill-color: #00e676;
+    background: none;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 230, 118, 0.3);
     animation: fadeInDown 0.8s ease-out;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
 }
 
 .page-header p {
     font-size: 1.25rem;
     font-weight: 400;
-    color: #e2e8f0;
+    color: #f1f5f9;
     max-width: 600px;
     margin: 0 auto;
     animation: fadeInUp 0.8s ease-out;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 /* Floating Filter Bar - Sleek Glassmorphism */
