@@ -260,3 +260,35 @@ def cancel_booking(request, booking_id):
     return redirect('profile')
 
 
+def custom_500(request):
+    import sys, traceback
+    from django.http import HttpResponse
+    exc_type, exc_value, exc_tb = sys.exc_info()
+    error_details = "".join(traceback.format_exception(exc_type, exc_value, exc_tb)) if exc_type else "No traceback details available."
+    
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Server Error (500) - VAHAD Diagnostic</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0f19; color: #e2e8f0; padding: 40px 20px; }}
+        .box {{ max-width: 900px; margin: 0 auto; background: #1a2234; border: 1px solid #334155; border-radius: 12px; padding: 24px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+        h1 {{ color: #ef4444; margin-top: 0; font-size: 24px; }}
+        pre {{ background: #050811; color: #38bdf8; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.6; border: 1px solid #1e293b; }}
+        a {{ color: #10b981; font-weight: 600; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>VAHAD TMS - 500 Server Diagnostic</h1>
+        <p>A server error occurred during request processing. Details below:</p>
+        <pre>{error_details}</pre>
+        <p><a href="/">← Go back to Homepage</a></p>
+    </div>
+</body>
+</html>"""
+    return HttpResponse(html, status=500)
+
+

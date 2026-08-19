@@ -115,11 +115,12 @@ def get_database_config():
         }
 
     # 2. Explicit DB_HOST (Cloud MySQL or configured remote database)
-    db_host = os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST')
-    is_vercel = os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME')
+    db_host = (os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST') or '').strip()
+    is_vercel = bool(os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME') or os.environ.get('LAMBDA_TASK_ROOT'))
     
-    # If DB_HOST is set and we're not on Vercel pointing to unreachable 127.0.0.1
-    if db_host and not (is_vercel and db_host in ('127.0.0.1', 'localhost')):
+    # If DB_HOST is set to a remote server (ignore localhost on Vercel since Vercel cannot reach user's local PC)
+    is_local_host = db_host in ('127.0.0.1', 'localhost', '0.0.0.0', '::1', '') or db_host.startswith('127.0.0.1:') or db_host.startswith('localhost:')
+    if db_host and not (is_vercel and is_local_host):
         return {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': os.environ.get('DB_NAME', os.environ.get('MYSQL_DATABASE', 'Vahadtms')),

@@ -1,12 +1,18 @@
 import os
-import django
 import sys
 
-# Set up Django environment
+# Set up Django environment if not already loaded
 sys.path.append(os.getcwd())
-sys.path.append(os.path.join(os.getcwd(), 'VAHAD-TMS'))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vahad_project.settings')
-django.setup()
+if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vahad_project.settings')
+
+try:
+    import django
+    from django.apps import apps
+    if not apps.ready:
+        django.setup()
+except Exception:
+    pass
 
 from django.contrib.auth.models import User
 from vahad_app.models import Category, Destination
