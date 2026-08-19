@@ -28,12 +28,14 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-5c)f41c8s9#nz@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
-if DEBUG:
-    if '*' not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append('*')
+ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://*.vercel.app').split(',')
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.now.sh',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -90,16 +92,37 @@ WSGI_APPLICATION = 'vahad_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "VahadTMS",
-        "USER": "root",
-        "PASSWORD": "Hari@9361",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+if os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST'):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.environ.get('DB_NAME', os.environ.get('MYSQL_DATABASE', 'VahadTMS')),
+            "USER": os.environ.get('DB_USER', os.environ.get('MYSQL_USER', 'root')),
+            "PASSWORD": os.environ.get('DB_PASSWORD', os.environ.get('MYSQL_PASSWORD', '')),
+            "HOST": os.environ.get('DB_HOST', os.environ.get('MYSQL_HOST', '127.0.0.1')),
+            "PORT": os.environ.get('DB_PORT', os.environ.get('MYSQL_PORT', '3306')),
+        }
     }
-}
+elif os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+    # In Vercel serverless environment without external DB config, fallback to SQLite
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "/tmp/db.sqlite3" if os.path.exists("/tmp") else BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    # Local MySQL default
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": "VahadTMS",
+            "USER": "root",
+            "PASSWORD": "Hari@9361",
+            "HOST": "127.0.0.1",
+            "PORT": "3306",
+        }
+    }
 
 
 # Password validation
@@ -142,12 +165,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+WHITENOISE_MANIFEST_STRICT = False
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
