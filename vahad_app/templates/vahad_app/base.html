@@ -635,17 +635,21 @@
             let destinationsUrl = "{% url 'destinations' %}";
             const url = new URL(window.location.href);
             
-            // If we are already on the destinations page, we preserve query and category
-            if (url.pathname.includes('/destinations/')) {
-                if (loc) {
-                    url.searchParams.set('location', loc);
+            // If on destinations page, preserve or update query params
+            if (url.pathname.includes('/destinations')) {
+                if (loc && loc.trim() !== '') {
+                    url.searchParams.set('location', loc.trim());
                 } else {
                     url.searchParams.delete('location');
                 }
-                window.location.href = url.toString();
+                window.location.href = url.pathname + url.search;
             } else {
-                // If on another page, go to destinations with the location
-                window.location.href = destinationsUrl + "?location=" + encodeURIComponent(loc);
+                // If on another page, navigate to destinations with location
+                if (loc && loc.trim() !== '') {
+                    window.location.href = destinationsUrl + "?location=" + encodeURIComponent(loc.trim());
+                } else {
+                    window.location.href = destinationsUrl;
+                }
             }
         }
 
