@@ -16,10 +16,12 @@ class UserRegisterForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
-        user.first_name = self.cleaned_data['full_name']
+        full_name = self.cleaned_data['full_name'].strip()
+        if full_name:
+            user.first_name = full_name
         if commit:
             user.save()
-            profile = user.userprofile
+            profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.phone = self.cleaned_data['phone']
             if self.cleaned_data['profile_photo']:
                 profile.profile_photo = self.cleaned_data['profile_photo']

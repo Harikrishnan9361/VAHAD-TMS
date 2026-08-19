@@ -28,12 +28,17 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-5c)f41c8s9#nz@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app').split(',')
-if DEBUG:
-    if '*' not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append('*')
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOSTS',
+    'localhost,127.0.0.1,.vercel.app,http://localhost:8000,http://127.0.0.1:8000'
+).split(',')
+if DEBUG and '*' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('*')
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://*.vercel.app').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:8000,http://127.0.0.1:8000,https://*.vercel.app'
+).split(',')
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
@@ -90,16 +95,30 @@ WSGI_APPLICATION = 'vahad_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "VahadTMS",
-        "USER": "root",
-        "PASSWORD": "Hari@9361",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+DB_NAME = os.environ.get('DB_NAME') or os.environ.get('MYSQL_DATABASE')
+DB_USER = os.environ.get('DB_USER') or os.environ.get('MYSQL_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD') or os.environ.get('MYSQL_PASSWORD')
+DB_HOST = os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST', '127.0.0.1')
+DB_PORT = os.environ.get('DB_PORT') or os.environ.get('MYSQL_PORT', '3306')
+
+if DB_NAME and DB_USER and DB_PASSWORD:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": DB_NAME,
+            "USER": DB_USER,
+            "PASSWORD": DB_PASSWORD,
+            "HOST": DB_HOST,
+            "PORT": DB_PORT,
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
