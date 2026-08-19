@@ -8,8 +8,12 @@ import uuid
 from datetime import datetime
 
 def home(request):
-    categories = Category.objects.all()[:10]
-    featured_destinations = Destination.objects.filter(is_featured=True)[:8]
+    try:
+        categories = Category.objects.all()[:10]
+        featured_destinations = Destination.objects.filter(is_featured=True)[:8]
+    except Exception:
+        categories = []
+        featured_destinations = []
     return render(request, 'vahad_app/home.html', {
         'categories': categories,
         'featured_destinations': featured_destinations
@@ -35,36 +39,41 @@ def destinations(request):
     query = request.GET.get('q', '').strip()
     location = request.GET.get('location', '').strip()
     
-    all_destinations = Destination.objects.all().select_related('category')
-    
-    # 1. Filter by Category
-    if category_id:
-        try:
-            category_id = int(category_id)
-            all_destinations = all_destinations.filter(category_id=category_id)
-        except (ValueError, TypeError):
-            category_id = None
+    try:
+        all_destinations = Destination.objects.all().select_related('category')
         
-    # 2. Filter by Location
-    if location:
-        all_destinations = all_destinations.filter(location__icontains=location)
-    
-    # 3. Filter by Search Query
-    if query:
-        from django.db.models import Q
-        keywords = query.split()
-        search_filter = Q()
-        for kw in keywords:
-            search_filter |= (
-                Q(name__icontains=kw) |
-                Q(description__icontains=kw) |
-                Q(location__icontains=kw) |
-                Q(category__name__icontains=kw) |
-                Q(best_time_to_visit__icontains=kw)
-            )
-        all_destinations = all_destinations.filter(search_filter).distinct()
+        # 1. Filter by Category
+        if category_id:
+            try:
+                category_id = int(category_id)
+                all_destinations = all_destinations.filter(category_id=category_id)
+            except (ValueError, TypeError):
+                category_id = None
+            
+        # 2. Filter by Location
+        if location:
+            all_destinations = all_destinations.filter(location__icontains=location)
         
-    categories = Category.objects.all()
+        # 3. Filter by Search Query
+        if query:
+            from django.db.models import Q
+            keywords = query.split()
+            search_filter = Q()
+            for kw in keywords:
+                search_filter |= (
+                    Q(name__icontains=kw) |
+                    Q(description__icontains=kw) |
+                    Q(location__icontains=kw) |
+                    Q(category__name__icontains=kw) |
+                    Q(best_time_to_visit__icontains=kw)
+                )
+            all_destinations = all_destinations.filter(search_filter).distinct()
+            
+        categories = Category.objects.all()
+    except Exception:
+        all_destinations = []
+        categories = []
+
     return render(request, 'vahad_app/destinations.html', {
         'destinations': all_destinations,
         'categories': categories,

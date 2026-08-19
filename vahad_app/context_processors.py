@@ -1,18 +1,23 @@
 from .models import Destination
 
 def locations_processor(request):
-    raw_locations = Destination.objects.values_list('location', flat=True).distinct()
-    
-    locations = set()
-    for loc in raw_locations:
-        if ',' in loc:
-            parts = [p.strip() for p in loc.split(',')]
-            for part in parts:
-                locations.add(part)
-        else:
-            locations.add(loc.strip())
-            
-    sorted_locations = sorted(list(locations))
+    sorted_locations = []
+    try:
+        raw_locations = Destination.objects.values_list('location', flat=True).distinct()
+        locations = set()
+        for loc in raw_locations:
+            if loc:
+                if ',' in loc:
+                    parts = [p.strip() for p in loc.split(',')]
+                    for part in parts:
+                        if part:
+                            locations.add(part)
+                else:
+                    locations.add(loc.strip())
+        sorted_locations = sorted(list(locations))
+    except Exception:
+        sorted_locations = []
+
     current_location = request.GET.get('location', '')
     
     return {

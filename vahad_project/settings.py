@@ -89,40 +89,94 @@ TEMPLATES = [
 WSGI_APPLICATION = 'vahad_project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# Database Configuration
+# Supports DATABASE_URL (PostgreSQL/MySQL), remote DB_HOST, Vercel Serverless /tmp SQLite, and local MySQL/SQLite
+import urllib.parse
+import shutil
 
-if os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST'):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get('DB_NAME', os.environ.get('MYSQL_DATABASE', 'VahadTMS')),
-            "USER": os.environ.get('DB_USER', os.environ.get('MYSQL_USER', 'root')),
-            "PASSWORD": os.environ.get('DB_PASSWORD', os.environ.get('MYSQL_PASSWORD', 'Hari@9361')),
-            "HOST": os.environ.get('DB_HOST', os.environ.get('MYSQL_HOST', '127.0.0.1')),
-            "PORT": os.environ.get('DB_PORT', os.environ.get('MYSQL_PORT', '3306')),
+def get_database_config():
+    # 1. DATABASE_URL / POSTGRES_URL / MYSQL_URL
+    database_url = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL') or os.environ.get('MYSQL_URL')
+    if database_url:
+        url = urllib.parse.urlparse(database_url)
+        engine = 'django.db.backends.sqlite3'
+        if 'postgres' in url.scheme:
+            engine = 'django.db.backends.postgresql'
+        elif 'mysql' in url.scheme:
+            engine = 'django.db.backends.mysql'
+        
+        return {
+            'ENGINE': engine,
+            'NAME': url.path[1:] if url.path else '',
+            'USER': url.username or 'root',
+            'PASSWORD': url.password or '',
+            'HOST': url.hostname or '',
+            'PORT': str(url.port or ('5432' if 'postgres' in engine else '3306')),
         }
-    }
-elif os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
-    # In Vercel serverless environment without external DB config, fallback to SQLite
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/tmp/db.sqlite3" if os.path.exists("/tmp") else BASE_DIR / "db.sqlite3",
+
+    # 2. Explicit DB_HOST (Cloud MySQL or configured remote database)
+    db_host = os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST')
+    is_vercel = os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME')
+    
+    # If DB_HOST is set and we're not on Vercel pointing to unreachable 127.0.0.1
+    if db_host and not (is_vercel and db_host in ('127.0.0.1', 'localhost')):
+        return {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', os.environ.get('MYSQL_DATABASE', 'Vahadtms')),
+            'USER': os.environ.get('DB_USER', os.environ.get('MYSQL_USER', 'root')),
+            'PASSWORD': os.environ.get('DB_PASSWORD', os.environ.get('MYSQL_PASSWORD', 'Hari@9361')),
+            'HOST': db_host,
+            'PORT': os.environ.get('DB_PORT', os.environ.get('MYSQL_PORT', '3306')),
         }
-    }
-else:
-    # Local MySQL default
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": "Vahadtms",
-            "USER": "root",
-            "PASSWORD": "Hari@9361",
-            "HOST": "127.0.0.1",
-            "PORT": "3306",
+
+    # 3. Vercel Serverless Lambda runtime
+    if is_vercel:
+        tmp_db = Path('/tmp/db.sqlite3')
+        src_db = BASE_DIR / 'db.sqlite3'
+        
+        # Copy bundled database to writable /tmp directory if it doesn't exist yet
+        if not tmp_db.exists() or tmp_db.stat().st_size == 0:
+            if src_db.exists() and src_db.stat().st_size > 0:
+                try:
+                    shutil.copyfile(src_db, tmp_db)
+                except Exception as e:
+                    print(f"Warning copying SQLite database to /tmp: {e}")
+        
+        db_path = '/tmp/db.sqlite3' if os.path.exists('/tmp') else str(src_db)
+        return {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': db_path,
         }
-    }
+
+    # 4. Local Development: Try MySQL, fallback to SQLite if MySQL service is offline
+    try:
+        import pymysql
+        conn = pymysql.connect(
+            host='127.0.0.1',
+            user=os.environ.get('DB_USER', 'root'),
+            password=os.environ.get('DB_PASSWORD', 'Hari@9361'),
+            database=os.environ.get('DB_NAME', 'Vahadtms'),
+            port=int(os.environ.get('DB_PORT', 3306)),
+            connect_timeout=2
+        )
+        conn.close()
+        return {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', 'Vahadtms'),
+            'USER': os.environ.get('DB_USER', 'root'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'Hari@9361'),
+            'HOST': '127.0.0.1',
+            'PORT': os.environ.get('DB_PORT', '3306'),
+        }
+    except Exception:
+        return {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(BASE_DIR / 'db.sqlite3'),
+        }
+
+DATABASES = {
+    'default': get_database_config()
+}
 
 
 # Password validation

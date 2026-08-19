@@ -22,7 +22,3 @@ __pycache__/
 # OS metadata
 .DS_Store
 Thumbs.db
-
-# Local database files
-db.sqlite3
-*.sqlite3
