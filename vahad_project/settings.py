@@ -109,7 +109,7 @@ def get_database_config():
             'ENGINE': engine,
             'NAME': url.path[1:] if url.path else '',
             'USER': url.username or 'root',
-            'PASSWORD': url.password or '',
+            'PASSWORD': url.password or 'Hari@9361',
             'HOST': url.hostname or '',
             'PORT': str(url.port or ('5432' if 'postgres' in engine else '3306')),
         }
