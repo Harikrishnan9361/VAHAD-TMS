@@ -98,7 +98,7 @@ if os.environ.get('DB_HOST') or os.environ.get('MYSQL_HOST'):
             "ENGINE": "django.db.backends.mysql",
             "NAME": os.environ.get('DB_NAME', os.environ.get('MYSQL_DATABASE', 'VahadTMS')),
             "USER": os.environ.get('DB_USER', os.environ.get('MYSQL_USER', 'root')),
-            "PASSWORD": os.environ.get('DB_PASSWORD', os.environ.get('MYSQL_PASSWORD', '')),
+            "PASSWORD": os.environ.get('DB_PASSWORD', os.environ.get('MYSQL_PASSWORD', 'Hari@9361')),
             "HOST": os.environ.get('DB_HOST', os.environ.get('MYSQL_HOST', '127.0.0.1')),
             "PORT": os.environ.get('DB_PORT', os.environ.get('MYSQL_PORT', '3306')),
         }
@@ -116,7 +116,7 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": "VahadTMS",
+            "NAME": "Vahadtms",
             "USER": "root",
             "PASSWORD": "Hari@9361",
             "HOST": "127.0.0.1",
