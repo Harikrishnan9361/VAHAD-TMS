@@ -8,12 +8,8 @@ import uuid
 from datetime import datetime
 
 def home(request):
-    try:
-        categories = Category.objects.all()[:10]
-        featured_destinations = Destination.objects.filter(is_featured=True)[:8]
-    except Exception:
-        categories = []
-        featured_destinations = []
+    categories = Category.objects.all()[:10]
+    featured_destinations = Destination.objects.filter(is_featured=True)[:8]
     return render(request, 'vahad_app/home.html', {
         'categories': categories,
         'featured_destinations': featured_destinations
@@ -39,40 +35,36 @@ def destinations(request):
     query = request.GET.get('q', '').strip()
     location = request.GET.get('location', '').strip()
     
-    try:
-        all_destinations = Destination.objects.all().select_related('category')
+    all_destinations = Destination.objects.all().select_related('category')
+    
+    # 1. Filter by Category
+    if category_id:
+        try:
+            category_id = int(category_id)
+            all_destinations = all_destinations.filter(category_id=category_id)
+        except (ValueError, TypeError):
+            category_id = None
         
-        # 1. Filter by Category
-        if category_id:
-            try:
-                category_id = int(category_id)
-                all_destinations = all_destinations.filter(category_id=category_id)
-            except (ValueError, TypeError):
-                category_id = None
-            
-        # 2. Filter by Location
-        if location:
-            all_destinations = all_destinations.filter(location__icontains=location)
+    # 2. Filter by Location
+    if location:
+        all_destinations = all_destinations.filter(location__icontains=location)
+    
+    # 3. Filter by Search Query
+    if query:
+        from django.db.models import Q
+        keywords = query.split()
+        search_filter = Q()
+        for kw in keywords:
+            search_filter |= (
+                Q(name__icontains=kw) |
+                Q(description__icontains=kw) |
+                Q(location__icontains=kw) |
+                Q(category__name__icontains=kw) |
+                Q(best_time_to_visit__icontains=kw)
+            )
+        all_destinations = all_destinations.filter(search_filter).distinct()
         
-        # 3. Filter by Search Query
-        if query:
-            from django.db.models import Q
-            keywords = query.split()
-            search_filter = Q()
-            for kw in keywords:
-                search_filter |= (
-                    Q(name__icontains=kw) |
-                    Q(description__icontains=kw) |
-                    Q(location__icontains=kw) |
-                    Q(category__name__icontains=kw) |
-                    Q(best_time_to_visit__icontains=kw)
-                )
-            all_destinations = all_destinations.filter(search_filter).distinct()
-            
-        categories = Category.objects.all()
-    except Exception:
-        all_destinations = []
-        categories = []
+    categories = Category.objects.all()
 
     return render(request, 'vahad_app/destinations.html', {
         'destinations': all_destinations,
@@ -224,7 +216,6 @@ def rewards(request):
         'points_pct': points_pct
     })
 
-
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
@@ -258,37 +249,3 @@ def cancel_booking(request, booking_id):
     booking.save()
     messages.success(request, "Booking cancelled successfully.")
     return redirect('profile')
-
-
-def custom_500(request):
-    import sys, traceback
-    from django.http import HttpResponse
-    exc_type, exc_value, exc_tb = sys.exc_info()
-    error_details = "".join(traceback.format_exception(exc_type, exc_value, exc_tb)) if exc_type else "No traceback details available."
-    
-    html = f"""<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Server Error (500) - VAHAD Diagnostic</title>
-    <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0f19; color: #e2e8f0; padding: 40px 20px; }}
-        .box {{ max-width: 900px; margin: 0 auto; background: #1a2234; border: 1px solid #334155; border-radius: 12px; padding: 24px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
-        h1 {{ color: #ef4444; margin-top: 0; font-size: 24px; }}
-        pre {{ background: #050811; color: #38bdf8; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.6; border: 1px solid #1e293b; }}
-        a {{ color: #10b981; font-weight: 600; text-decoration: none; }}
-        a:hover {{ text-decoration: underline; }}
-    </style>
-</head>
-<body>
-    <div class="box">
-        <h1>VAHAD TMS - 500 Server Diagnostic</h1>
-        <p>A server error occurred during request processing. Details below:</p>
-        <pre>{error_details}</pre>
-        <p><a href="/">← Go back to Homepage</a></p>
-    </div>
-</body>
-</html>"""
-    return HttpResponse(html, status=500)
-
-
