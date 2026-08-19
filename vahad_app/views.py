@@ -165,7 +165,7 @@ def confirmation(request, booking_id):
     booking_obj = get_object_or_404(Booking, booking_id=booking_id)
     # Mark as paid for simulation
     if not booking_obj.is_paid:
-        if request.GET.get('pro') == 'true':
+        if request.GET.get('pro') == 'true' or request.GET.get('vip') == 'true':
             from decimal import Decimal
             booking_obj.total_price += Decimal('2999.00')
         booking_obj.is_paid = True
@@ -174,6 +174,7 @@ def confirmation(request, booking_id):
 
 @login_required
 def profile(request):
+    UserProfile.objects.get_or_create(user=request.user)
     bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
     points = bookings.count() * 150
     return render(request, 'vahad_app/profile.html', {
@@ -186,6 +187,7 @@ def premium(request):
 
 @login_required
 def rewards(request):
+    UserProfile.objects.get_or_create(user=request.user)
     bookings_count = Booking.objects.filter(user=request.user).count()
     # Simple gamification logic
     points = bookings_count * 150

@@ -15,13 +15,14 @@ class UserProfile(models.Model):
         return self.user.username
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_or_save_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
+        UserProfile.objects.get_or_create(user=instance)
+    else:
+        if hasattr(instance, 'userprofile'):
+            instance.userprofile.save()
+        else:
+            UserProfile.objects.get_or_create(user=instance)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)

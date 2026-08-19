@@ -19,9 +19,9 @@ class UserRegisterForm(UserCreationForm):
         user.first_name = self.cleaned_data['full_name']
         if commit:
             user.save()
-            profile = user.userprofile
-            profile.phone = self.cleaned_data['phone']
-            if self.cleaned_data['profile_photo']:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.phone = self.cleaned_data.get('phone', '')
+            if self.cleaned_data.get('profile_photo'):
                 profile.profile_photo = self.cleaned_data['profile_photo']
             profile.save()
         return user
